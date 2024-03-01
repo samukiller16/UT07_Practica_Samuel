@@ -44,6 +44,9 @@
 
 #mainnav li:hover{
     text-decoration: underline;
+}
+
+#mainnav > ul > li:hover{
     animation: agrandar 0.5s alternate 2;
 }
 

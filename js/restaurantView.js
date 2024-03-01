@@ -1,3 +1,5 @@
+import { newDishValidation,  } from './validation.js';
+
 const EXCECUTE_HANDLER = Symbol('excecuteHandler');
 
 class RestaurantView {
@@ -544,6 +546,170 @@ class RestaurantView {
 
     container.insertAdjacentHTML('afterbegin', `<h1>${title}</h1><br>`);
     this.categories.append(container);
+  }
+
+  showAdminMenu() {
+    const menuOption = document.createElement('li');
+    menuOption.classList.add('nav-item');
+    menuOption.classList.add('dropdown');
+    menuOption.insertAdjacentHTML(
+      'afterbegin',
+      '<a class="nav-link dropdown-toggle" href="#" id="navServices" role="button" data-bs-toggle="dropdown" aria-expanded="false">	Adminitración</a>',
+    );
+    const suboptions = document.createElement('ul');
+    suboptions.classList.add('dropdown-menu');
+    suboptions.insertAdjacentHTML('beforeend', '<li><a id="lnewDish" class="dropdown-item" href="#new-dish">Crear Plato</a></li>');
+    suboptions.insertAdjacentHTML('beforeend', '<li><a id="ldelDish" class="dropdown-item" href="#del-dish">Eliminar Plato</a></li>');
+    suboptions.insertAdjacentHTML('beforeend', '<li><a id="lassignsDishes" class="dropdown-item" href="#assigns-dishes">Asignar/Desasignar platos</a></li>');
+    suboptions.insertAdjacentHTML('beforeend', '<li><a id="lnewdelCategories" class="dropdown-item" href="#newdel-categories">Crear/Eliminar categorías</a></li>');
+    suboptions.insertAdjacentHTML('beforeend', '<li><a id="lnewRestaurant" class="dropdown-item" href="#new-restaurant">Crear Restaurante</a></li>');
+    suboptions.insertAdjacentHTML('beforeend', '<li><a id="lmodCategories" class="dropdown-item" href="#mod-categories">Modificar Categorías</a></li>');
+    menuOption.append(suboptions);
+    this.menu.append(menuOption);
+  }
+
+  bindAdminMenu(hNewDish, hRemoveDish, hAssignsDishes, hNewRemoveCategory, hNewRestaurant, hModCategories) {
+    const newDishLink = document.getElementById('lnewDish');
+    newDishLink.addEventListener('click', (event) => {
+      this[EXCECUTE_HANDLER](hNewDish, [], '#new-dish', { action: 'newDish' }, '#', event);
+    });
+
+  }
+
+  bindNewDishForm(handler) {
+    newDishValidation(handler);
+  }
+
+  showNewDishForm(categories, allergens) {
+    this.dishes.replaceChildren();
+    if (this.dishes.children.length >= 1)
+      this.dishes.children[0].remove();
+
+    const container = document.createElement('div');
+    container.classList.add('container');
+    container.classList.add('my-3');
+    container.id = 'new-dish';
+
+    const form = document.createElement('form');
+    form.name = 'fNewDish';
+    form.setAttribute('role', 'form');
+    form.setAttribute('novalidate', '');
+    form.classList.add('row');
+    form.classList.add('g-3');
+
+    container.insertAdjacentHTML(
+      'afterbegin',
+      '<h1 class="display-5">Nuevo plato</h1>',
+    );
+    form.insertAdjacentHTML(
+      'beforeend',`
+			<div class="col-md-6 mb-3">
+				<label class="form-label" for="ndTitle">Nombre *</label>
+				<div class="input-group">
+					<span class="input-group-text"><i class="bi bi-type"></i></span>
+					<input type="text" class="form-control" id="ndTitle" name="ndTitle"
+						placeholder="Nombre del plato " value="" required>
+					<div class="invalid-feedback">El nombre es obligatorio.</div>
+					<div class="valid-feedback">Correcto.</div>
+				</div>
+			</div>
+			<div class="col-md-6 mb-3">
+				<label class="form-label" for="ndUrl">URL de la imagen *</label>
+				<div class="input-group">
+					<span class="input-group-text"><i class="bi bi-file-image"></i></span>
+					<input type="url" class="form-control" id="ndUrl" name="ndUrl" placeholder="URL de la imagen"
+						value="" required>
+					<div class="invalid-feedback">La URL no es válida.</div>
+					<div class="valid-feedback">Correcto.</div>
+				</div>
+			</div>
+      <div class="col-md-6 mb-3">
+				<label class="form-label" for="ndIngredients">Ingredientes</label>
+				<div class="input-group">
+					<span class="input-group-text"><i class="bi bi-body-text"></i></span>
+					<input type="text" class="form-control" id="ndIngredients" name="ndIngredients" placeholder="Lechuga, bacon" value="" required>
+					<div class="invalid-feedback"></div>
+					<div class="valid-feedback">Correcto.</div>
+				</div>
+			</div>
+			<div class="col-md-6 mb-3">
+				<label class="form-label" for="ndDescription">Descripción</label>
+				<div class="input-group">
+					<span class="input-group-text"><i class="bi bi-body-text"></i></span>
+					<input type="text" class="form-control" id="ndDescription" name="ndDescription" value="">
+					<div class="invalid-feedback"></div>
+					<div class="valid-feedback">Correcto.</div>
+				</div>
+			</div>
+      
+      <div class="col-md-6 mb-3">
+				<label class="form-label" for="ndCategories">Categoría</label>
+				<div class="input-group">
+					<span class="input-group-text"><i class="bi bi-body-text"></i></span>
+					<select class="form-select" name="ndCategories" id="ndCategories" required>
+            <option value = "" selected disabled></option>
+					</select>
+					<div class="invalid-feedback">El producto debe pertenecer al menos a una categoría.</div>
+					<div class="valid-feedback">Correcto.</div>
+				</div>
+			</div>
+      `);
+      const ndCategories = form.querySelector('#ndCategories');
+      for (const category of categories) {
+        ndCategories.insertAdjacentHTML('beforeend', `<option value="${category.name}">${category.name}</option>`);
+      }
+      form.insertAdjacentHTML(
+        'beforeend',`
+      <div class="col-md-6 mb-3">
+				<label class="form-label" for="ndAllergens">Alérgenos</label>
+			  <div class="input-group">
+					<span class="input-group-text"><i class="bi bi-body-text"></i></span>
+					<select class="form-select" name="ndAllergens" id="ndAllergens" multiple required>
+					</select>
+					<div class="invalid-feedback">El producto debe tener algún alérgeno.</div>
+					<div class="valid-feedback">Correcto.</div>
+				</div>
+			</div>
+      `);
+      const ndAllergens = form.querySelector('#ndAllergens');
+      for (const allergen of allergens) {
+        ndAllergens.insertAdjacentHTML('beforeend', `<option value="${allergen.name}">${allergen.name}</option>`);
+      }
+      form.insertAdjacentHTML(
+        'beforeend',`
+			<div class="mb-12">
+				<button class="btn btn-primary" type="submit">Enviar</button>
+				<button class="btn btn-primary" type="reset">Cancelar</button>
+			</div>`,
+    );
+    container.append(form);
+    this.dishes.append(container);
+  }
+
+  showNewDishModal(done, dish, error) {
+    const messageModalContainer = document.getElementById('messageModal');
+    const messageModal = new bootstrap.Modal('#messageModal');
+
+    const title = document.getElementById('messageModalTitle');
+    title.innerHTML = 'Nuevo Plato';
+    const body = messageModalContainer.querySelector('.modal-body');
+    body.replaceChildren();
+    if (done) {
+      body.insertAdjacentHTML('afterbegin', `<div class="p-3">El plato <strong>${dish.name}</strong> ha sido creado correctamente.</div>`);
+    } else {
+      body.insertAdjacentHTML(
+        'afterbegin',
+        `<div class="error text-danger p-3"><i class="bi bi-exclamation-triangle"></i> El plato <strong>${dish.name}</strong> ya está creado.</div>`,
+      );
+    }
+    messageModal.show();
+    const listener = (event) => {
+      if (done) {
+        document.fNewDish.reset();
+      }
+      document.fNewDish.ndTitle.focus();
+    };
+    messageModalContainer.addEventListener('hidden.bs.modal', listener, { once: true });
   }
 }
 

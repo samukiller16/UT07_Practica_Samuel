@@ -77,7 +77,7 @@ class UnregisteredMenuException extends BaseException {
 class InvalidAllergenException extends BaseException {
   constructor(fileName, lineNumber) {
     super(
-      "El alérgeno no puede ser null o no es un objeto Menu.",
+      "El alérgeno no puede ser null o no es un objeto Allergen.",
       fileName,
       lineNumber
     );

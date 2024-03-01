@@ -894,7 +894,7 @@ const RestaurantsManager = (function () {
           return existingDish;
         } else {
           // Si no existe, crear un nuevo objeto Dish
-          const newDish = new Dish(name, description, ingredients, image);
+          const newDish = new Dish(name, description = "", ingredients, image);
           return newDish;
         }
       }

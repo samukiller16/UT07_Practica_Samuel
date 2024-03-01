@@ -10,6 +10,7 @@ const historyActions = {
   productsMenuList: (event) => RestaurantApp.handleProductsMenuList(event.state.menu),
   restaurantsList: (event) => RestaurantApp.handleRestaurant(event.state.restaurant),
   showProduct: (event) => RestaurantApp.handleShowProduct(event.state.serial),
+  newDish: () =>	RestaurantApp.handleNewDishForm(),
 };
 
 window.addEventListener("popstate", (event) => {

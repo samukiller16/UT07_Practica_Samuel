@@ -108,6 +108,9 @@ class RestaurantController{
         this.onAddMenu();
         this.onAddRestaurant();
         this[VIEW].createWinCloser();
+        this[VIEW].showAdminMenu();
+        this[VIEW].bindAdminMenu(this.handleNewDishForm);
+
     };
 
     onInit = () => {
@@ -201,6 +204,34 @@ class RestaurantController{
         const rest = this[MODEL].createRestaurant(name, "", new Coordinate(1,1));
         this[VIEW].showRestaurant(rest, rest.name);
     };
+
+    handleNewDishForm = () => {
+        this[VIEW].showNewDishForm(this[MODEL].getterCategories(), this[MODEL].getterAllergens());
+        this[VIEW].bindNewDishForm(this.handleCreateDish);
+    };
+
+    handleCreateDish = (name, desc, ingredients, image, categoryName, allergens) => {
+        const dish = this[MODEL].createDish(name, desc, ingredients, image);
+        const category = this[MODEL].createCategory(categoryName, "");
+
+        let done; 
+        let error;
+        try {
+          this[MODEL].addDish(dish);
+          this[MODEL].assignCategoryToDish(dish, category);
+
+        for (const allergenName of allergens) {
+            const allergen = this[MODEL].createAllergen(allergenName, "");
+            this[MODEL].assignAllergenToDish(dish, allergen);
+            
+        }
+          done = true;
+        } catch (exception) {
+          done = false;
+          error = exception;
+        }
+        this[VIEW].showNewDishModal(done, dish, error);
+      };
         
 }
 
