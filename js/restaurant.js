@@ -518,12 +518,11 @@ const RestaurantsManager = (function () {
             const indexDish = menuObj.dishes.findIndex(
               (dishObj) => dishObj.dish.name === dish.name
             );
-      
+
             if (indexDish !== -1) {
               menuObj.dishes.splice(indexDish, 1);
             }
           }
-          
 
           // Eliminar menú del array
           this.#dishes.splice(index, 1);
@@ -622,6 +621,10 @@ const RestaurantsManager = (function () {
             throw new UnregisteredCategoryException();
           }
 
+          indexCat = this.#dishes[indexDish].categories.findIndex(
+            (cat) => cat.name === category.name
+          );
+
           this.#dishes[indexDish].categories.splice(indexCat, 1);
         }
         return this;
@@ -677,6 +680,10 @@ const RestaurantsManager = (function () {
             throw new UnregisteredAllergenException();
           }
 
+          indexAllergen = this.#dishes[indexDish].allergens.findIndex(
+            (all) => all.name === allergen.name
+          );
+
           this.#dishes[indexDish].allergens.splice(indexAllergen, 1);
         }
         return this;
@@ -685,7 +692,7 @@ const RestaurantsManager = (function () {
       // Asignamos plato a menú
       assignDishToMenu(menu, ...dishesAdd) {
         if (!(menu instanceof Menu) || menu == null) {
-          throw new InvalidDishException();
+          throw new InvalidMenuException();
         }
         let indexMenu = this.getPositionMenu(menu);
 
@@ -732,6 +739,10 @@ const RestaurantsManager = (function () {
             // El plato no existe, excepción
             throw new UnregisteredDishException();
           }
+
+          indexDish = this.#menus[indexMenu].dishes.findIndex(
+            (dishObj) => dishObj.dish.name === dish.name
+          );
           //Borramos de nuestro array de menús
           //Dentro del objeto literal con el menú indicado
           //El objeto literal con el plato
@@ -743,7 +754,7 @@ const RestaurantsManager = (function () {
       // Cambiamos la posición de dos platos del menú
       changeDishesPositionsInMenu(menu, dish1, dish2) {
         if (!(menu instanceof Menu) || menu == null) {
-          throw new InvalidDishException();
+          throw new InvalidMenuException();
         }
         let indexMenu = this.getPositionMenu(menu);
 
@@ -767,6 +778,14 @@ const RestaurantsManager = (function () {
           // El plato no existe, excepción
           throw new UnregisteredDishException();
         }
+
+        indexDish1 = this.#menus[indexMenu].dishes.findIndex(
+          (dishObj) => dishObj.dish.name === dish1.name
+        );
+
+        indexDish2 = this.#menus[indexMenu].dishes.findIndex(
+          (dishObj) => dishObj.dish.name === dish2.name
+        );
 
         // Intercambiar las posiciones de los platos en el menú
         const tempDish = this.#menus[indexMenu].dishes[indexDish1];
@@ -806,6 +825,25 @@ const RestaurantsManager = (function () {
         for (const dish of dishesInCategory) {
           yield dish;
         }
+      }
+
+      // Método para obtener las categorías de un plato específico
+      getCategoriesOfDish(dishName) {
+        // Buscar el índice del plato en la lista de platos
+        const dishIndex = this.#dishes.findIndex(
+          (dishObj) => dishObj.dish.name === dishName
+        );
+
+        // Verificar si el plato existe
+        if (dishIndex === -1) {
+          throw new UnregisteredDishException();
+        }
+
+        // Obtener las categorías asociadas al plato
+        const categoriesOfDish = this.#dishes[dishIndex].categories.map(
+          (category) => category
+        );
+        return categoriesOfDish;
       }
 
       // Nueva función para obtener platos con alérgeno
@@ -864,19 +902,23 @@ const RestaurantsManager = (function () {
 
       *getDishesInMenu(menuName) {
         // Buscar el índice del menú en la lista de menús
-        const menuIndex = this.#menus.findIndex(menuObj => menuObj.menu.name === menuName);
-    
+        const menuIndex = this.#menus.findIndex(
+          (menuObj) => menuObj.menu.name === menuName
+        );
+
         // Verificar si el menú existe
         if (menuIndex === -1) {
-            throw new Error(`Menu "${menuName}" not found.`);
+          throw new Error(`Menu "${menuName}" not found.`);
         }
-    
+        console.log(this.#menus[menuIndex]);
         // Obtener los platos asociados al menú
-        const dishesInMenu = this.#menus[menuIndex].dishes.map(dishObj => dishObj.dish);
-    
+        const dishesInMenu = this.#menus[menuIndex].dishes.map(
+          (dishObj) => dishObj.dish
+        );
+
         // Devolver un iterador para los platos del menú
         for (const dish of dishesInMenu) {
-            yield dish;
+          yield dish;
         }
       }
 
@@ -894,7 +936,7 @@ const RestaurantsManager = (function () {
           return existingDish;
         } else {
           // Si no existe, crear un nuevo objeto Dish
-          const newDish = new Dish(name, description = "", ingredients, image);
+          const newDish = new Dish(name, description, ingredients, image);
           return newDish;
         }
       }

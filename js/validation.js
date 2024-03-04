@@ -105,4 +105,214 @@ function newDishValidation(handler) {
   form.ndIngredients.addEventListener('change', defaultCheckElement);
 }
 
-export {newDishValidation};
+function assignationDishesValidation(handler){
+  const form = document.forms.fAssignsDishes;
+  form.setAttribute('novalidate', true);
+  form.addEventListener('submit', function (event) {
+    let isValid = true;
+    let firstInvalidElement = null;
+
+    if (!this.adMenus.checkValidity()) {
+      isValid = false;
+      showFeedBack(this.adMenus, false);
+      firstInvalidElement = this.adMenus;
+    } else {
+      showFeedBack(this.adMenus, true);
+    }
+
+    if (!isValid) {
+      firstInvalidElement.focus();
+    } else {
+
+      const assDishes = [...this.adAssDishes.selectedOptions].map((option) => option.value);
+      const deasDishes = [...this.adDeasDishes.selectedOptions].map((option) => option.value);
+      handler(this.adMenus.value, assDishes, deasDishes, this.adDish1.value, this.adDish2.value);
+    }
+    event.preventDefault();
+    event.stopPropagation();
+  });
+
+  form.addEventListener('reset', (function (event) {
+    for (const div of this.querySelectorAll('div.valid-feedback, div.invalid-feedback')) {
+      div.classList.remove('d-block');
+      div.classList.add('d-none');
+    }
+    for (const input of this.querySelectorAll('input')) {
+      input.classList.remove('is-valid');
+      input.classList.remove('is-invalid');
+    }
+    for (const input of this.querySelectorAll('div.row')) {
+      input.remove();
+    }
+    for (const space of this.querySelectorAll('div.mb-12')) {
+      space.remove();
+    }
+    for (const button of this.querySelectorAll('button')) {
+      button.remove();
+    }
+    this.adMenus.focus();
+  }));
+}
+
+function newCategoryValidation(handler) {
+  const form = document.forms.fNewCategory;
+  form.setAttribute('novalidate', true);
+  form.addEventListener('submit', function (event) {
+    let isValid = true;
+    let firstInvalidElement = null;
+
+    this.ncDescription.value = this.ncDescription.value.trim();
+    showFeedBack(this.ncDescription, true);
+
+    if (!this.ncUrl.checkValidity()) {
+      isValid = false;
+      showFeedBack(this.ncUrl, false);
+      firstInvalidElement = this.ncUrl;
+    } else {
+      showFeedBack(this.ncUrl, true);
+    }
+
+    if (!this.ncTitle.checkValidity()) {
+      isValid = false;
+      showFeedBack(this.ncTitle, false);
+      firstInvalidElement = this.ncTitle;
+    } else {
+      showFeedBack(this.ncTitle, true);
+    }
+
+    if (!isValid) {
+      firstInvalidElement.focus();
+    } else {
+      handler(this.ncTitle.value, this.ncUrl.value, this.ncDescription.value);
+    }
+    event.preventDefault();
+    event.stopPropagation();
+  });
+
+  form.addEventListener('reset', (function (event) {
+    for (const div of this.querySelectorAll('div.valid-feedback, div.invalid-feedback')) {
+      div.classList.remove('d-block');
+      div.classList.add('d-none');
+    }
+    for (const input of this.querySelectorAll('input')) {
+      input.classList.remove('is-valid');
+      input.classList.remove('is-invalid');
+    }
+    this.ncTitle.focus();
+  }));
+
+  form.ncTitle.addEventListener('change', defaultCheckElement);
+  form.ncUrl.addEventListener('change', defaultCheckElement);
+}
+
+function newRestaurantValidation(handler) {
+  const form = document.forms.fNewRestaurant;
+  form.setAttribute('novalidate', true);
+  form.addEventListener('submit', function (event) {
+    let isValid = true;
+    let firstInvalidElement = null;
+
+    this.ncDescription.value = this.ncDescription.value.trim();
+    showFeedBack(this.ncDescription, true);
+
+    if (!this.ncLong.checkValidity()) {
+      isValid = false;
+      showFeedBack(this.ncLong, false);
+      firstInvalidElement = this.ncLong;
+    } else {
+      showFeedBack(this.ncLong, true);
+    }
+
+    if (!this.ncLat.checkValidity()) {
+      isValid = false;
+      showFeedBack(this.ncLat, false);
+      firstInvalidElement = this.ncLat;
+    } else {
+      showFeedBack(this.ncLat, true);
+    }
+
+    if (!this.ncTitle.checkValidity()) {
+      isValid = false;
+      showFeedBack(this.ncTitle, false);
+      firstInvalidElement = this.ncTitle;
+    } else {
+      showFeedBack(this.ncTitle, true);
+    }
+
+    if (!isValid) {
+      firstInvalidElement.focus();
+    } else {
+      handler(this.ncTitle.value, this.ncDescription.value, this.ncLat.value, this.ncLong.value);
+    }
+    event.preventDefault();
+    event.stopPropagation();
+  });
+
+  form.addEventListener('reset', (function (event) {
+    for (const div of this.querySelectorAll('div.valid-feedback, div.invalid-feedback')) {
+      div.classList.remove('d-block');
+      div.classList.add('d-none');
+    }
+    for (const input of this.querySelectorAll('input')) {
+      input.classList.remove('is-valid');
+      input.classList.remove('is-invalid');
+    }
+    this.ncTitle.focus();
+  }));
+
+  form.ncTitle.addEventListener('change', defaultCheckElement);
+  form.ncLat.addEventListener('change', defaultCheckElement);
+  form.ncLong.addEventListener('change', defaultCheckElement);
+}
+
+function modCategoriesValidation(handler){
+  const form = document.forms.fModCategories;
+  form.setAttribute('novalidate', true);
+  form.addEventListener('submit', function (event) {
+    let isValid = true;
+    let firstInvalidElement = null;
+
+    if (!this.mcDishes.checkValidity()) {
+      isValid = false;
+      showFeedBack(this.mcDishes, false);
+      firstInvalidElement = this.mcDishes;
+    } else {
+      showFeedBack(this.mcDishes, true);
+    }
+
+    if (!isValid) {
+      firstInvalidElement.focus();
+    } else {
+
+      const assCats = [...this.mcAssCat.selectedOptions].map((option) => option.value);
+      const deasCats = [...this.mcDeasCat.selectedOptions].map((option) => option.value);
+      alert("ee");
+      handler(this.mcDishes.value, assCats, deasCats);
+    }
+    event.preventDefault();
+    event.stopPropagation();
+  });
+
+  form.addEventListener('reset', (function (event) {
+    for (const div of this.querySelectorAll('div.valid-feedback, div.invalid-feedback')) {
+      div.classList.remove('d-block');
+      div.classList.add('d-none');
+    }
+    for (const input of this.querySelectorAll('input')) {
+      input.classList.remove('is-valid');
+      input.classList.remove('is-invalid');
+    }
+    for (const input of this.querySelectorAll('div.row')) {
+      input.remove();
+    }
+    for (const space of this.querySelectorAll('div.mb-12')) {
+      space.remove();
+    }
+    for (const button of this.querySelectorAll('button')) {
+      button.remove();
+    }
+    this.mcDishes.focus();
+  }));
+}
+
+export {newDishValidation, assignationDishesValidation, newCategoryValidation, newRestaurantValidation, modCategoriesValidation};

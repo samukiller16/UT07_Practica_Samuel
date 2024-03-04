@@ -98,7 +98,7 @@ section {
 	width: 100%;
 }
 
-#category-list a {
+#category-list a, #remove-category a{
   color: #ffd700;
   text-decoration: none;
 }
@@ -111,7 +111,7 @@ figcaption{
   text-align: center;
 }
 
-#category-list a:hover{
+#category-list a:hover, #remove-category a:hover{
   color: #c5a800;
 }
 
@@ -378,4 +378,9 @@ label.radio input:checked+span {
   text-decoration: none;
   color: #b0a21b;
   justify-content: center;
+}
+
+
+#dishes div.cat-list-image img{
+  width: 300px;
 }

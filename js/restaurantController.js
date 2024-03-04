@@ -109,7 +109,8 @@ class RestaurantController{
         this.onAddRestaurant();
         this[VIEW].createWinCloser();
         this[VIEW].showAdminMenu();
-        this[VIEW].bindAdminMenu(this.handleNewDishForm);
+        this[VIEW].bindAdminMenu(this.handleNewDishForm, this.handleRemoveDishForm, this.handleAssignsDishesForm,
+          this.handleNewCategoryForm, this.handleRemoveCategoryForm, this.handleNewRestaurantForm, this.handleModifyCategoriesForm);
 
     };
 
@@ -202,6 +203,8 @@ class RestaurantController{
 
     handleRestaurant = (name) => {
         const rest = this[MODEL].createRestaurant(name, "", new Coordinate(1,1));
+        console.log(name);
+        console.log(rest);
         this[VIEW].showRestaurant(rest, rest.name);
     };
 
@@ -209,6 +212,11 @@ class RestaurantController{
         this[VIEW].showNewDishForm(this[MODEL].getterCategories(), this[MODEL].getterAllergens());
         this[VIEW].bindNewDishForm(this.handleCreateDish);
     };
+
+    handleRemoveDishForm = () => {
+		  this[VIEW].showRemoveDishForm(this[MODEL].getterCategories());
+      this[VIEW].bindRemoveDishSelects(this.handleRemoveDishListByCategory);
+	  }
 
     handleCreateDish = (name, desc, ingredients, image, categoryName, allergens) => {
         const dish = this[MODEL].createDish(name, desc, ingredients, image);
@@ -231,8 +239,225 @@ class RestaurantController{
           error = exception;
         }
         this[VIEW].showNewDishModal(done, dish, error);
+    };
+
+    handleRemoveDish = (name) => {
+        let done; let error; let
+          product;
+        try {
+          product = this[MODEL].createDish(name);
+          this[MODEL].removeDish(product);
+          done = true;
+        } catch (exception) {
+          done = false;
+          error = exception;
+        }
+        this[VIEW].showRemoveDishModal(done, product, error);
+    };
+
+    handleRemoveDishListByCategory = (category) => {
+        const cat = this[MODEL].createCategory(category);
+        this[VIEW].showRemoveDishList(this[MODEL].getDishesInCategory(cat));
+        this[VIEW].bindRemoveDish(this.handleRemoveDish);
+        this[VIEW].bindShowProduct(this.handleShowProduct);
       };
+
+    handleAssignsDishesForm = () => {
+      this[VIEW].showAssignsDishesForm(this[MODEL].getterMenus());
+      this[VIEW].bindAssignationDishes(this.handleAssignsDishes);
+      this[VIEW].bindAssignationDishesForm(this.handleAssignAndOrderDishes);
+    }
+
+    handleAssignAndOrderDishes = (menu, assDishes, deasDishes, dish1, dish2) => {
+      let done;
+      let error;
+      try{
+        const menuObj = this[MODEL].createMenu(menu);
+        if (dish1 != dish2){
+          const dishCreated1 = this[MODEL].createDish(dish1);
+          const dishCreated2 = this[MODEL].createDish(dish2);
+          this[MODEL].changeDishesPositionsInMenu(menuObj, dishCreated1, dishCreated2);
+        }
+        if (assDishes.length >= 1) {
+          for (const dish of assDishes) {
+            const dishCreated = this[MODEL].createDish(dish);
+            this[MODEL].assignDishToMenu(menuObj, dishCreated);
+          }
+        }
+        if (deasDishes.length >= 1) {
+          for (const dish of deasDishes) {
+            const dishCreated = this[MODEL].createDish(dish);
+            this[MODEL].deassignDishToMenu(menuObj, dishCreated);
+  
+          }
+        }
+      } catch (exception) {
+        done = false;
+        error = exception;
+      }
+       
+      done = true;
+      
+
+      this[VIEW].showDishesAssignationModal(done, error);
+    }
+
+    handleAssignsDishes = (menuName) => {
+      const menu = this[MODEL].createMenu(menuName);
+      const form = document.getElementsByName("fAssignsDishes")[0];
+
+      for (const input of form.querySelectorAll('div.row')) {
+        input.remove();
+      }
+      for (const space of form.querySelectorAll('div.mb-12')) {
+        space.remove();
+      }
+      for (const button of form.querySelectorAll('button')) {
+        button.remove();
+      }
+      const dishesInMenu = [...this[MODEL].getDishesInMenu(menu.name)];
+
+      const allDishesObj = [...this[MODEL].getterDishes()];
+      const allDishes = [];
+      for (const dish of allDishesObj) {
+        allDishes.push(dish.dish);
+      }
+
+      const dishesNotInMenu = allDishes.filter((dish) => {
+        return !dishesInMenu.some((menuDish) => menuDish.name === dish.name);
+      });
+      this[VIEW].showAssignsDishesSelects(dishesInMenu, dishesNotInMenu);
+    };
+
+    handleNewCategoryForm = () => {
+      this[VIEW].showNewCategoryForm();
+      this[VIEW].bindNewCategoryForm(this.handleCreateCategory);
+    };
+
+    handleCreateCategory = (name, url, desc) => {
+      const cat = this[MODEL].createCategory(name, desc);
+      cat.url = url;
+  
+      let done; 
+      let error;
+      try {
+        this[MODEL].addCategory(cat);
+        done = true;
+        this.onAddCategory();
+      } catch (exception) {
+        done = false;
+        error = exception;
+      }
+      this[VIEW].showNewCategoryModal(done, cat, error);
+    };
+
+    handleRemoveCategoryForm = () => {
+      this[VIEW].showRemoveCategoryForm(this[MODEL].getterCategories());
+      this[VIEW].bindRemoveCategoryForm(this.handleRemoveCategory,
+        this.handleProductsCategoryList);
+    };
+
+    handleRemoveCategory = (title) => {
+      let done; 
+      let error; 
+      let cat;
+      try {
+        cat = this[MODEL].createCategory(title);
+        this[MODEL].removeCategory(cat);
+        done = true;
+        this.onAddCategory();
+        this.handleRemoveCategoryForm();
+      } catch (exception) {
+        done = false;
+        error = exception;
+      }
+      this[VIEW].showRemoveCategoryModal(done, cat, error);
+    };
+      
+    handleNewRestaurantForm = () => {
+      this[VIEW].showNewRestaurantForm();
+      this[VIEW].bindNewRestaurantForm(this.handleCreateRestaurant);
+    };
+
+    handleCreateRestaurant = (name, desc, lat, long) => {
+      
+      const loc = new Coordinate(Number.parseInt(lat), Number.parseInt(long));
+      const rest = this[MODEL].createRestaurant(name, desc, loc);
+  
+      let done; 
+      let error;
+      try {
+        this[MODEL].addRestaurant(rest);
+        done = true;
+        this.onAddRestaurant();
+      } catch (exception) {
+        console.log(exception);
+        done = false;
+        error = exception;
+      }
+      this[VIEW].showNewRestaurantModal(done, rest, error);
+    };
+
+    handleModifyCategoriesForm = () => {
+      this[VIEW].showModifyCategoriesForm(this[MODEL].getterDishes());
+      this[VIEW].bindModifyCategories(this.handleModifyCategories);
+      this[VIEW].bindModifyCategoriesForm(this.handleModificationCategories);
+    }
+
+    handleModificationCategories = (dish, assCat, deasCat) => {
+      let done;
+      let error;
+      try{
         
+        const dishObj = this[MODEL].createDish(dish);
+        if (assCat.length >= 1) {
+          for (const cat of assCat) {
+            const catObj = this[MODEL].createCategory(cat);
+            this[MODEL].assignCategoryToDish(dishObj, catObj);
+          }
+        }
+        if (deasCat.length >= 1) {
+          for (const cat of deasCat) {
+            const catObj = this[MODEL].createCategory(cat);
+            this[MODEL].deassignCategoryToDish(dishObj, catObj);
+          }
+        }
+      } catch (exception) {
+        console.log(exception);
+        
+        done = false;
+        error = exception;
+      }
+       
+      done = true;
+      
+
+      this[VIEW].showModifyCategoriesModal(done, error);
+    }
+
+    handleModifyCategories = (dishName) => {
+      const dish = this[MODEL].createMenu(dishName);
+      const form = document.getElementsByName("fModCategories")[0];
+
+      for (const input of form.querySelectorAll('div.row')) {
+        input.remove();
+      }
+      for (const space of form.querySelectorAll('div.mb-12')) {
+        space.remove();
+      }
+      for (const button of form.querySelectorAll('button')) {
+        button.remove();
+      }
+      const categoriesInDish = this[MODEL].getCategoriesOfDish(dish.name);
+      console.log(categoriesInDish);
+
+      const allCategories = [...this[MODEL].getterCategories()];
+
+      const categoriesNotInDish = allCategories.filter((cat) => {
+        return !categoriesInDish.some((category) => category.name === cat.name);
+      });
+      this[VIEW].showModifyCategoriesSelects(categoriesInDish, categoriesNotInDish);
+    };
 }
 
 export default RestaurantController;

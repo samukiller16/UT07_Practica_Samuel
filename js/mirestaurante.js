@@ -11,6 +11,22 @@ const historyActions = {
   restaurantsList: (event) => RestaurantApp.handleRestaurant(event.state.restaurant),
   showProduct: (event) => RestaurantApp.handleShowProduct(event.state.serial),
   newDish: () =>	RestaurantApp.handleNewDishForm(),
+  removeDish: () => RestaurantApp.handleRemoveDishForm(),
+  removeDishByCategory: (event) => {
+		RestaurantApp.handleRemoveDishForm();
+		RestaurantApp.handleRemoveDishListByCategory(event.state.category);
+	},
+  assignsDishes: () => RestaurantApp.handleAssignsDishesForm(),
+  assignationDishes: (event) => {
+    RestaurantApp.handleAssignsDishes(event.state.menu);
+  },
+  newCategory: () =>	RestaurantApp.handleNewCategoryForm(),
+  removeCategory: () =>	RestaurantApp.handleRemoveCategoryForm(),
+  newRestaurant: () =>	RestaurantApp.handleNewRestaurantForm(),
+  modCategories: () => RestaurantApp.handleModifyCategoriesForm(),
+  categoriesModification: (event) => {
+    RestaurantApp.handleModifyCategories(event.state.dish);
+  },
 };
 
 window.addEventListener("popstate", (event) => {
