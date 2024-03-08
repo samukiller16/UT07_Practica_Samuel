@@ -1,5 +1,5 @@
 import { newDishValidation, assignationDishesValidation, newCategoryValidation, newRestaurantValidation, modCategoriesValidation} from './validation.js';
-
+import { setCookie } from './util.js';
 const EXCECUTE_HANDLER = Symbol('excecuteHandler');
 
 class RestaurantView {
@@ -11,18 +11,31 @@ class RestaurantView {
     this.productWindows = [];
   }
 
-  [EXCECUTE_HANDLER](handler, handlerArguments, scrollElement, data, url, event) {
+  [EXCECUTE_HANDLER](
+    handler,
+    handlerArguments,
+    scrollElement,
+    data,
+    url,
+    event
+  ) {
     handler(...handlerArguments);
     const scroll = document.querySelector(scrollElement);
     if (scroll) scroll.scrollIntoView();
     history.pushState(data, null, url);
     event.preventDefault();
   }
-    
 
   bindInit(handler) {
-    document.getElementById('init').addEventListener('click', (event) => {
-      this[EXCECUTE_HANDLER](handler, [], 'body', { action: 'init' }, '#', event);
+    document.getElementById("init").addEventListener("click", (event) => {
+      this[EXCECUTE_HANDLER](
+        handler,
+        [],
+        "body",
+        { action: "init" },
+        "#",
+        event
+      );
     });
   }
 
@@ -46,22 +59,24 @@ class RestaurantView {
     </div>`
       );
     }
-    container.insertAdjacentHTML('afterbegin', `<h1>Categorías</h1><br>`);
+    container.insertAdjacentHTML("afterbegin", `<h1>Categorías</h1><br>`);
     this.categories.append(container);
   }
 
   showCategoriesInMenu(categories) {
-    const navCats = document.getElementById('navCats');
+    const navCats = document.getElementById("navCats");
     const container = navCats.nextElementSibling;
     container.replaceChildren();
     for (const category of categories) {
-      container.insertAdjacentHTML('beforeend', `<li><a data-category="${category.name}" class="dropdown-item" href="#product-list">${category.name}</a></li>`);
+      container.insertAdjacentHTML(
+        "beforeend",
+        `<li><a data-category="${category.name}" class="dropdown-item" href="#product-list">${category.name}</a></li>`
+      );
     }
   }
 
   showDishes(dishes) {
-    if (this.dishes.children.length >= 1)
-      this.dishes.children[0].remove();
+    if (this.dishes.children.length >= 1) this.dishes.children[0].remove();
     //Cogemos los datos del iterador
     const allDishes = [...dishes];
     const randomDishes = [];
@@ -74,67 +89,80 @@ class RestaurantView {
 
     this.dishes.replaceChildren();
     if (this.dishes.children.length > 1) this.dishes.children[1].remove();
-    const container = document.createElement('div');
-    container.id = 'rand-list';
-    container.classList.add('container');
-    container.classList.add('my-3');
-    container.insertAdjacentHTML('beforeend', '<div class="row"> </div>');
+    const container = document.createElement("div");
+    container.id = "rand-list";
+    container.classList.add("container");
+    container.classList.add("my-3");
+    container.insertAdjacentHTML("beforeend", '<div class="row"> </div>');
 
     for (const product of randomDishes) {
-      const div = document.createElement('div');
-      div.classList.add('col-md-4');
-      div.insertAdjacentHTML('beforeend', `<figure class="card card-product-grid card-lg"> <a data-serial="${product.dish.name}" href="#single-product" class="img-wrap"><img class="${product.dish.constructor.name}-style" src="${product.dish.image}"></a>
+      const div = document.createElement("div");
+      div.classList.add("col-md-4");
+      div.insertAdjacentHTML(
+        "beforeend",
+        `<figure class="card card-product-grid card-lg"> <a data-serial="${product.dish.name}" href="#single-product" class="img-wrap"><img class="${product.dish.constructor.name}-style" src="${product.dish.image}"></a>
 					<figcaption class="info-wrap">
 						<div class="row">
 							<div class="col-md-12"> <a data-serial="${product.dish.name}" href="#single-product" class="title">${product.dish.name}</a> </div>
 						</div>
 					</figcaption>
-				</figure>`);
+				</figure>`
+      );
       container.children[0].append(div);
     }
-    container.insertAdjacentHTML('afterbegin', `<h1>Platos aleatorios</h1><br>`);
+    container.insertAdjacentHTML(
+      "afterbegin",
+      `<h1>Platos aleatorios</h1><br>`
+    );
     this.dishes.append(container);
   }
 
   listProducts(products, title) {
     this.categories.replaceChildren();
-    if (this.categories.children.length > 1) this.categories.children[1].remove();
-    const container = document.createElement('div');
-    container.id = 'product-list';
-    container.classList.add('container');
-    container.classList.add('my-3');
-    container.insertAdjacentHTML('beforeend', '<div class="row"> </div>');
+    if (this.categories.children.length > 1)
+      this.categories.children[1].remove();
+    const container = document.createElement("div");
+    container.id = "product-list";
+    container.classList.add("container");
+    container.classList.add("my-3");
+    container.insertAdjacentHTML("beforeend", '<div class="row"> </div>');
 
     for (const product of products) {
-      const div = document.createElement('div');
-      div.classList.add('col-md-4');
-      div.insertAdjacentHTML('beforeend', `<figure class="card card-product-grid card-lg"> <a data-serial="${product.dish.name}" href="#single-product" class="img-wrap"><img class="${product.dish.constructor.name}-style" src="${product.dish.image}"></a>
+      const div = document.createElement("div");
+      div.classList.add("col-md-4");
+      div.insertAdjacentHTML(
+        "beforeend",
+        `<figure class="card card-product-grid card-lg"> <a data-serial="${product.dish.name}" href="#single-product" class="img-wrap"><img class="${product.dish.constructor.name}-style" src="${product.dish.image}"></a>
 					<figcaption class="info-wrap">
 						<div class="row">
 							<div class="col-md-12"> <a data-serial="${product.dish.name}" href="#single-product" class="title">${product.dish.name}</a> </div>
 							
 						</div>
 					</figcaption>
-				</figure>`);
+				</figure>`
+      );
       container.children[0].append(div);
     }
-    container.insertAdjacentHTML('afterbegin', `<h1>${title}</h1><br>`);
+    container.insertAdjacentHTML("afterbegin", `<h1>${title}</h1><br>`);
     this.categories.append(container);
   }
 
   listProductsMenu(products, title) {
     this.categories.replaceChildren();
-    if (this.categories.children.length > 1) this.categories.children[1].remove();
-    const container = document.createElement('div');
-    container.id = 'product-list';
-    container.classList.add('container');
-    container.classList.add('my-3');
-    container.insertAdjacentHTML('beforeend', '<div class="row"> </div>');
+    if (this.categories.children.length > 1)
+      this.categories.children[1].remove();
+    const container = document.createElement("div");
+    container.id = "product-list";
+    container.classList.add("container");
+    container.classList.add("my-3");
+    container.insertAdjacentHTML("beforeend", '<div class="row"> </div>');
 
     for (const product of products) {
-      const div = document.createElement('div');
-      div.classList.add('col-md-4');
-      div.insertAdjacentHTML('beforeend', `<figure class="card card-product-grid card-lg"> <a data-serial="${product.name}" href="#single-product" class="img-wrap"><img class="${product.constructor.name}-style" src="${product.image}"></a>
+      const div = document.createElement("div");
+      div.classList.add("col-md-4");
+      div.insertAdjacentHTML(
+        "beforeend",
+        `<figure class="card card-product-grid card-lg"> <a data-serial="${product.name}" href="#single-product" class="img-wrap"><img class="${product.constructor.name}-style" src="${product.image}"></a>
 					<figcaption class="info-wrap">
 						<div class="row">
 							<div class="col-md-8"> <a data-serial="${product.name}" href="#single-product" class="title">${product.name}</a> </div>
@@ -143,128 +171,133 @@ class RestaurantView {
 							</div>
 						</div>
 					</figcaption>
-				</figure>`);
+				</figure>`
+      );
       container.children[0].append(div);
     }
-    container.insertAdjacentHTML('afterbegin', `<h1>${title}</h1><br>`);
+    container.insertAdjacentHTML("afterbegin", `<h1>${title}</h1><br>`);
     this.categories.append(container);
   }
 
   bindProductsCategoryList(handler) {
-    const categoryList = document.getElementById('category-list');
-    const links = categoryList.querySelectorAll('a');
+    const categoryList = document.getElementById("category-list");
+    const links = categoryList.querySelectorAll("a");
     for (const link of links) {
-      link.addEventListener('click', (event) => {
+      link.addEventListener("click", (event) => {
         const { category } = event.currentTarget.dataset;
         this[EXCECUTE_HANDLER](
           handler,
           [category],
-          '#product-list',
-          { action: 'productsCategoryList', category },
-          '#category-list',
-          event,
+          "#product-list",
+          { action: "productsCategoryList", category },
+          "#category-list",
+          event
         );
       });
     }
   }
 
   bindProductsCategoryListInMenu(handler) {
-    const navCats = document.getElementById('navCats');
-    const links = navCats.nextElementSibling.querySelectorAll('a');
+    const navCats = document.getElementById("navCats");
+    const links = navCats.nextElementSibling.querySelectorAll("a");
     for (const link of links) {
-      link.addEventListener('click', (event) => {
+      link.addEventListener("click", (event) => {
         const { category } = event.currentTarget.dataset;
         this[EXCECUTE_HANDLER](
           handler,
           [category],
-          '#product-list',
-          { action: 'productsCategoryList', category },
-          '#category-list',
-          event,
+          "#product-list",
+          { action: "productsCategoryList", category },
+          "#category-list",
+          event
         );
       });
     }
   }
 
   bindProductsAllergenListInMenu(handler) {
-    const navAllergens = document.getElementById('navAllergens');
-    const links = navAllergens.nextSibling.querySelectorAll('a');
+    const navAllergens = document.getElementById("navAllergens");
+    const links = navAllergens.nextSibling.querySelectorAll("a");
     for (const link of links) {
-      link.addEventListener('click', (event) => {
+      link.addEventListener("click", (event) => {
         const { allergen } = event.currentTarget.dataset;
         this[EXCECUTE_HANDLER](
           handler,
           [allergen],
-          '#product-list',
-          { action: 'productsAllergenList', allergen },
-          '#category-list',
-          event,
+          "#product-list",
+          { action: "productsAllergenList", allergen },
+          "#category-list",
+          event
         );
       });
     }
   }
 
   bindProductsMenuListInMenu(handler) {
-    const navMenus = document.getElementById('navMenus');
-    const links = navMenus.nextSibling.querySelectorAll('a');
+    const navMenus = document.getElementById("navMenus");
+    const links = navMenus.nextSibling.querySelectorAll("a");
     for (const link of links) {
-      link.addEventListener('click', (event) => {
+      link.addEventListener("click", (event) => {
         const { menu } = event.currentTarget.dataset;
         this[EXCECUTE_HANDLER](
           handler,
           [menu],
-          '#product-list',
-          { action: 'productsMenuList', menu },
-          '#category-list',
-          event,
+          "#product-list",
+          { action: "productsMenuList", menu },
+          "#category-list",
+          event
         );
       });
     }
   }
 
   bindRestaurantsInMenu(handler) {
-    const navRest = document.getElementById('navRestaurants');
-    const links = navRest.nextElementSibling.querySelectorAll('a');
+    const navRest = document.getElementById("navRestaurants");
+    const links = navRest.nextElementSibling.querySelectorAll("a");
     for (const link of links) {
-      link.addEventListener('click', (event) => {
+      link.addEventListener("click", (event) => {
         const { restaurant } = event.currentTarget.dataset;
         this[EXCECUTE_HANDLER](
           handler,
           [restaurant],
-          '#restaurantes',
-          { action: 'restaurantsList', restaurant },
-          '#restaurantes',
-          event,
+          "#restaurantes",
+          { action: "restaurantsList", restaurant },
+          "#restaurantes",
+          event
         );
       });
     }
   }
 
-
-
   showProduct(product, message) {
     this.dishes.replaceChildren();
-    if (this.categories.children.length > 1) this.categories.children[1].remove();
-    const container = document.createElement('div');
-    container.classList.add('container');
-    container.classList.add('mt-5');
-    container.classList.add('mb-5');
+    if (this.dishes.children.length > 1) this.dishes.children[1].remove();
+    const container = document.createElement("div");
+    container.classList.add("container");
+    container.classList.add("mt-5");
+    container.classList.add("mb-5");
 
     if (product) {
-      container.id = 'single-product';
+      container.id = "single-product";
       container.classList.add(`${product.constructor.name}-style`);
-      container.insertAdjacentHTML('beforeend', `<div class="row d-flex justify-content-center">
+      container.insertAdjacentHTML(
+        "beforeend",
+        `<div class="row d-flex justify-content-center">
         <div class="col-md-10">
           <div class="card">
             <div class="row align-items-center">
               <div class="col-md-6">
                 <div class="images p-3">
-                  <div class="text-center p-4"> <img id="main-image" src="${product.image}"/> </div>
+                  <div class="text-center p-4"> <img id="main-image" src="${
+                    product.image
+                  }"/> </div>
                 </div>
               </div>
               <div class="col-md-6">
                 <div class="product p-4">
-                  <div class="mt-4 mb-3"> <span class="text-uppercase brand">${product.name}</span>
+                  <div class="mt-4 mb-3"> <span class="text-uppercase brand">${
+                    product.name
+                  }</span>
                     <h5 class="text-uppercase">${product.description}</h5>
                   </div>
                   <div class="sizes mt-5">
@@ -272,20 +305,23 @@ class RestaurantView {
                   </div>
                   <div class="cart mt-4 align-items-center">${product.stringIngredientes()}</div>
                   <div class="cart mt-4 align-items-center">
-										<button id="b-open" data-serial="${product.name}" class="btn btn-primary text-uppercase mr-2 px-4">Abrir en nueva ventana</button>
+										<button id="b-open" data-serial="${
+                      product.name
+                    }" class="btn btn-primary text-uppercase mr-2 px-4">Abrir en nueva ventana</button>
 									</div>
                 </div>
               </div>
             </div>
           </div>
         </div>
-      </div>`);
+      </div>`
+      );
     } else {
       container.insertAdjacentHTML(
-        'beforeend',
+        "beforeend",
         `<div class="row d-flex justify-content-center">
         ${message}
-      </div>`,
+      </div>`
       );
     }
     this.dishes.append(container);
@@ -293,32 +329,42 @@ class RestaurantView {
 
   showProductInNewWindow(product, message) {
     const pos = this.productWindows.length - 1;
-    const main = this.productWindows[pos].document.querySelector('main');
-    const header = this.productWindows[pos].document.querySelector('header nav');
+    const main = this.productWindows[pos].document.querySelector("main");
+    const header =
+      this.productWindows[pos].document.querySelector("header nav");
     main.replaceChildren();
     header.replaceChildren();
     let container;
     if (product) {
       this.productWindows[pos].document.title = `${product.name}`;
-      header.insertAdjacentHTML('beforeend', `<h1 data-serial="${product.name}" class="display-5 mb-5">${product.name}</h1>`);
-      container = document.createElement('div');
-      container.id = 'single-product';
+      header.insertAdjacentHTML(
+        "beforeend",
+        `<h1 data-serial="${product.name}" class="display-5 mb-5">${product.name}</h1>`
+      );
+      container = document.createElement("div");
+      container.id = "single-product";
       container.classList.add(`${product.constructor.name}-style`);
-      container.classList.add('container');
-      container.classList.add('mt-5');
-      container.classList.add('mb-5');
-      container.insertAdjacentHTML('beforeend', `<div id="newWinProd" class="row d-flex justify-content-center">
+      container.classList.add("container");
+      container.classList.add("mt-5");
+      container.classList.add("mb-5");
+      container.insertAdjacentHTML(
+        "beforeend",
+        `<div id="newWinProd" class="row d-flex justify-content-center">
         <div class="col-md-10">
           <div class="card">
             <div class="row align-items-center">
               <div class="col-md-6">
                 <div class="images p-3">
-                  <div class="text-center p-4"> <img id="main-image" src="${product.image}"/> </div>
+                  <div class="text-center p-4"> <img id="main-image" src="${
+                    product.image
+                  }"/> </div>
                 </div>
               </div>
               <div class="col-md-6">
                 <div class="product p-4">
-                  <div class="mt-4 mb-3"> <span class="text-uppercase brand">${product.name}</span>
+                  <div class="mt-4 mb-3"> <span class="text-uppercase brand">${
+                    product.name
+                  }</span>
                     <h5 class="text-uppercase">${product.description}</h5>
                   </div>
                   <div class="sizes mt-5">
@@ -330,79 +376,86 @@ class RestaurantView {
             </div>
           </div>
         </div>
-      </div>`);
-      container.insertAdjacentHTML('beforeend', '<button class="btn btn-primary text-uppercase m-2 px-4" onClick="window.close()">Cerrar</button>');
+      </div>`
+      );
+      container.insertAdjacentHTML(
+        "beforeend",
+        '<button class="btn btn-primary text-uppercase m-2 px-4" onClick="window.close()">Cerrar</button>'
+      );
       main.append(container);
     } else {
-      container = document.createElement('div');
-      container.classList.add('container');
-      container.classList.add('mt-5');
-      container.classList.add('mb-5');
-      container.insertAdjacentHTML('beforeend', `<div class="row d-flex justify-content-center">${message}</div>`);
+      container = document.createElement("div");
+      container.classList.add("container");
+      container.classList.add("mt-5");
+      container.classList.add("mb-5");
+      container.insertAdjacentHTML(
+        "beforeend",
+        `<div class="row d-flex justify-content-center">${message}</div>`
+      );
     }
     main.append(container);
     this.productWindows[pos].document.body.scrollIntoView();
   }
 
   bindShowProduct(handler) {
-    const productList = document.getElementById('product-list');
-    const links = productList.querySelectorAll('a.img-wrap');
+    const productList = document.getElementById("product-list");
+    const links = productList.querySelectorAll("a.img-wrap");
     for (const link of links) {
-        link.addEventListener('click', (event) => {
-          const { serial } = event.currentTarget.dataset;
-          this[EXCECUTE_HANDLER](
-            handler,
-            [serial],
-            '#single-product',
-            { action: 'showProduct', serial },
-            '#single-product',
-            event,
-          );
-        });
-    }
-    const images = productList.querySelectorAll('figcaption a');
-    for (const image of images) {
-      image.addEventListener('click', (event) => {
+      link.addEventListener("click", (event) => {
         const { serial } = event.currentTarget.dataset;
         this[EXCECUTE_HANDLER](
           handler,
           [serial],
-          '#single-product',
-          { action: 'showProduct', serial },
-          '#single-product',
-          event,
+          "#single-product",
+          { action: "showProduct", serial },
+          "#single-product",
+          event
+        );
+      });
+    }
+    const images = productList.querySelectorAll("figcaption a");
+    for (const image of images) {
+      image.addEventListener("click", (event) => {
+        const { serial } = event.currentTarget.dataset;
+        this[EXCECUTE_HANDLER](
+          handler,
+          [serial],
+          "#single-product",
+          { action: "showProduct", serial },
+          "#single-product",
+          event
         );
       });
     }
   }
 
   bindShowRandProduct(handler) {
-    const productList = document.getElementById('rand-list');
-    const links = productList.querySelectorAll('a.img-wrap');
+    const productList = document.getElementById("rand-list");
+    const links = productList.querySelectorAll("a.img-wrap");
     for (const link of links) {
-      link.addEventListener('click', (event) => {
+      link.addEventListener("click", (event) => {
         const { serial } = event.currentTarget.dataset;
         this[EXCECUTE_HANDLER](
           handler,
           [serial],
-          '#single-product',
-          { action: 'showRandProduct', serial },
-          '#single-product',
-          event,
+          "#single-product",
+          { action: "showRandProduct", serial },
+          "#single-product",
+          event
         );
       });
     }
-    const images = productList.querySelectorAll('figcaption a');
+    const images = productList.querySelectorAll("figcaption a");
     for (const image of images) {
-      image.addEventListener('click', (event) => {
+      image.addEventListener("click", (event) => {
         const { serial } = event.currentTarget.dataset;
         this[EXCECUTE_HANDLER](
           handler,
           [serial],
-          '#single-product',
-          { action: 'showRandProduct', serial },
-          '#single-product',
-          event,
+          "#single-product",
+          { action: "showRandProduct", serial },
+          "#single-product",
+          event
         );
       });
     }
@@ -410,21 +463,24 @@ class RestaurantView {
 
   bindShowProductInNewWindow(handler) {
     const pos = this.productWindows.length;
-    const bOpen = document.getElementById('b-open');
-    bOpen.addEventListener('click', (event) => {
-        const newWindow = window.open('product.html', 'ProductWindow'+pos, 'width=800, height=600, top=250, left=250, titlebar=yes, toolbar=no, menubar=no, location=no');
+    const bOpen = document.getElementById("b-open");
+    bOpen.addEventListener("click", (event) => {
+      const newWindow = window.open(
+        "product.html",
+        "ProductWindow" + pos,
+        "width=800, height=600, top=250, left=250, titlebar=yes, toolbar=no, menubar=no, location=no"
+      );
 
-        this.productWindows.push(newWindow);
-        newWindow.addEventListener('DOMContentLoaded', () => {
+      this.productWindows.push(newWindow);
+      newWindow.addEventListener("DOMContentLoaded", () => {
         handler(event.target.dataset.serial);
-      });      
-      
+      });
     });
   }
 
-  closeWindows(){
-    const bClose = document.getElementById('winCloser');
-    bClose.addEventListener('click', (event) => {
+  closeWindows() {
+    const bClose = document.getElementById("winCloser");
+    bClose.addEventListener("click", (event) => {
       for (let i = 0; i < this.productWindows.length; i++) {
         this.productWindows[i].close();
       }
@@ -476,11 +532,14 @@ class RestaurantView {
   }
 
   showRestaurantsInMenu(restaurants) {
-    const navRestaurants = document.getElementById('navRestaurants');
+    const navRestaurants = document.getElementById("navRestaurants");
     const container = navRestaurants.nextElementSibling;
     container.replaceChildren();
     for (const restaurant of restaurants) {
-      container.insertAdjacentHTML('beforeend', `<li><a data-restaurant="${restaurant.name}" class="dropdown-item" href="#product-list">${restaurant.name}</a></li>`);
+      container.insertAdjacentHTML(
+        "beforeend",
+        `<li><a data-restaurant="${restaurant.name}" class="dropdown-item" href="#product-list">${restaurant.name}</a></li>`
+      );
     }
   }
 
@@ -497,17 +556,21 @@ class RestaurantView {
 
   showRestaurant(rest, title) {
     this.categories.replaceChildren();
-    if (this.categories.children.length > 1) this.categories.children[1].remove();
-    const container = document.createElement('div');
-    container.id = 'restaurantes';
-    container.classList.add('container');
-    container.classList.add('my-3');
-    container.insertAdjacentHTML('beforeend', '<div class="row"> </div>');
+    if (this.categories.children.length > 1)
+      this.categories.children[1].remove();
+    const container = document.createElement("div");
+    container.id = "restaurantes";
+    container.classList.add("container");
+    container.classList.add("my-3");
+    container.insertAdjacentHTML("beforeend", '<div class="row"> </div>');
 
-    
-      const div = document.createElement('div');
-      div.classList.add('col-md-4');
-      div.insertAdjacentHTML('beforeend', `<div class="col-lg-3 col-md-6"><a data-restaurant="${rest.name}" href="#product-list">
+    const div = document.createElement("div");
+    div.classList.add("col-md-4");
+    div.insertAdjacentHTML(
+      "beforeend",
+      `<div class="col-lg-3 col-md-6"><a data-restaurant="${
+        rest.name
+      }" href="#product-list">
       
       <div class="cat-list-text rest-info">
         <h3>Nombre - ${rest.name}</h3>
@@ -516,69 +579,147 @@ class RestaurantView {
 
       </div>
     </a>
-  </div>`);
-      container.children[0].append(div);
+  </div>`
+    );
+    container.children[0].append(div);
 
-    container.insertAdjacentHTML('afterbegin', `<h1>${title}</h1><br>`);
+    container.insertAdjacentHTML("afterbegin", `<h1>${title}</h1><br>`);
     this.categories.append(container);
   }
 
   showAdminMenu() {
-    const menuOption = document.createElement('li');
-    menuOption.classList.add('nav-item');
-    menuOption.classList.add('dropdown');
+    const menuOption = document.createElement("li");
+    menuOption.classList.add("nav-item");
+    menuOption.classList.add("dropdown");
     menuOption.insertAdjacentHTML(
-      'afterbegin',
-      '<a class="nav-link dropdown-toggle" href="#" id="navServices" role="button" data-bs-toggle="dropdown" aria-expanded="false">	Adminitración</a>',
+      "afterbegin",
+      '<a class="nav-link dropdown-toggle" href="#" id="navServices" role="button" data-bs-toggle="dropdown" aria-expanded="false">	Adminitración</a>'
     );
-    const suboptions = document.createElement('ul');
-    suboptions.classList.add('dropdown-menu');
-    suboptions.insertAdjacentHTML('beforeend', '<li><a id="lnewDish" class="dropdown-item" href="#new-dish">Crear Plato</a></li>');
-    suboptions.insertAdjacentHTML('beforeend', '<li><a id="ldelDish" class="dropdown-item" href="#del-dish">Eliminar Plato</a></li>');
-    suboptions.insertAdjacentHTML('beforeend', '<li><a id="lassignsDishes" class="dropdown-item" href="#assigns-dishes">Asignar/Desasignar platos</a></li>');
-    suboptions.insertAdjacentHTML('beforeend', '<li><a id="lnewCategory" class="dropdown-item" href="#new-category">Crear categoría</a></li>');
-    suboptions.insertAdjacentHTML('beforeend', '<li><a id="ldelCategory" class="dropdown-item" href="#del-category">Eliminar categoría</a></li>');
-    suboptions.insertAdjacentHTML('beforeend', '<li><a id="lnewRestaurant" class="dropdown-item" href="#new-restaurant">Crear Restaurante</a></li>');
-    suboptions.insertAdjacentHTML('beforeend', '<li><a id="lmodCategories" class="dropdown-item" href="#mod-categories">Modificar Categorías</a></li>');
+    const suboptions = document.createElement("ul");
+    suboptions.classList.add("dropdown-menu");
+    suboptions.insertAdjacentHTML(
+      "beforeend",
+      '<li><a id="lnewDish" class="dropdown-item" href="#new-dish">Crear Plato</a></li>'
+    );
+    suboptions.insertAdjacentHTML(
+      "beforeend",
+      '<li><a id="ldelDish" class="dropdown-item" href="#del-dish">Eliminar Plato</a></li>'
+    );
+    suboptions.insertAdjacentHTML(
+      "beforeend",
+      '<li><a id="lassignsDishes" class="dropdown-item" href="#assigns-dishes">Asignar/Desasignar platos</a></li>'
+    );
+    suboptions.insertAdjacentHTML(
+      "beforeend",
+      '<li><a id="lnewCategory" class="dropdown-item" href="#new-category">Crear categoría</a></li>'
+    );
+    suboptions.insertAdjacentHTML(
+      "beforeend",
+      '<li><a id="ldelCategory" class="dropdown-item" href="#del-category">Eliminar categoría</a></li>'
+    );
+    suboptions.insertAdjacentHTML(
+      "beforeend",
+      '<li><a id="lnewRestaurant" class="dropdown-item" href="#new-restaurant">Crear Restaurante</a></li>'
+    );
+    suboptions.insertAdjacentHTML(
+      "beforeend",
+      '<li><a id="lmodCategories" class="dropdown-item" href="#mod-categories">Modificar Categorías</a></li>'
+    );
     menuOption.append(suboptions);
     this.menu.append(menuOption);
   }
 
-  bindAdminMenu(hNewDish, hRemoveDish, hAssignsDishes, hNewCategory, hRemoveCategory, hNewRestaurant, hModCategories) {
-    const newDishLink = document.getElementById('lnewDish');
-    newDishLink.addEventListener('click', (event) => {
-      this[EXCECUTE_HANDLER](hNewDish, [], '#new-dish', { action: 'newDish' }, '#', event);
+  bindAdminMenu(
+    hNewDish,
+    hRemoveDish,
+    hAssignsDishes,
+    hNewCategory,
+    hRemoveCategory,
+    hNewRestaurant,
+    hModCategories
+  ) {
+    const newDishLink = document.getElementById("lnewDish");
+    newDishLink.addEventListener("click", (event) => {
+      this[EXCECUTE_HANDLER](
+        hNewDish,
+        [],
+        "#new-dish",
+        { action: "newDish" },
+        "#",
+        event
+      );
     });
-    const delDishLink = document.getElementById('ldelDish');
-    delDishLink.addEventListener('click', (event) => {
-      this[EXCECUTE_HANDLER](hRemoveDish, [], '#remove-dish', { action: 'removeDish' }, '#', event);
-    });
-
-    const assignsDisehsLink = document.getElementById('lassignsDishes');
-    assignsDisehsLink.addEventListener('click', (event) => {
-      this[EXCECUTE_HANDLER](hAssignsDishes, [], '#assigns-dishes', { action: 'assignsDishes' }, '#', event);
-    });
-
-    const newCategoryLink = document.getElementById('lnewCategory');
-    newCategoryLink.addEventListener('click', (event) => {
-      this[EXCECUTE_HANDLER](hNewCategory, [], '#new-category', { action: 'newCategory' }, '#', event);
-    });
-
-    const delCategoryLink = document.getElementById('ldelCategory');
-    delCategoryLink.addEventListener('click', (event) => {
-      this[EXCECUTE_HANDLER](hRemoveCategory, [], '#remove-category', { action: 'removeCategory' }, '#', event);
-    });
-
-    const newRestaurantLink = document.getElementById('lnewRestaurant');
-    newRestaurantLink.addEventListener('click', (event) => {
-      this[EXCECUTE_HANDLER](hNewRestaurant, [], '#new-restaurant', { action: 'newCategory' }, '#', event);
-    });
-
-    const modCategories = document.getElementById('lmodCategories');
-    modCategories.addEventListener('click', (event) => {
-      this[EXCECUTE_HANDLER](hModCategories, [], '#mod-categories', { action: 'modCategories' }, '#', event);
+    const delDishLink = document.getElementById("ldelDish");
+    delDishLink.addEventListener("click", (event) => {
+      this[EXCECUTE_HANDLER](
+        hRemoveDish,
+        [],
+        "#remove-dish",
+        { action: "removeDish" },
+        "#",
+        event
+      );
     });
 
+    const assignsDisehsLink = document.getElementById("lassignsDishes");
+    assignsDisehsLink.addEventListener("click", (event) => {
+      this[EXCECUTE_HANDLER](
+        hAssignsDishes,
+        [],
+        "#assigns-dishes",
+        { action: "assignsDishes" },
+        "#",
+        event
+      );
+    });
+
+    const newCategoryLink = document.getElementById("lnewCategory");
+    newCategoryLink.addEventListener("click", (event) => {
+      this[EXCECUTE_HANDLER](
+        hNewCategory,
+        [],
+        "#new-category",
+        { action: "newCategory" },
+        "#",
+        event
+      );
+    });
+
+    const delCategoryLink = document.getElementById("ldelCategory");
+    delCategoryLink.addEventListener("click", (event) => {
+      this[EXCECUTE_HANDLER](
+        hRemoveCategory,
+        [],
+        "#remove-category",
+        { action: "removeCategory" },
+        "#",
+        event
+      );
+    });
+
+    const newRestaurantLink = document.getElementById("lnewRestaurant");
+    newRestaurantLink.addEventListener("click", (event) => {
+      this[EXCECUTE_HANDLER](
+        hNewRestaurant,
+        [],
+        "#new-restaurant",
+        { action: "newCategory" },
+        "#",
+        event
+      );
+    });
+
+    const modCategories = document.getElementById("lmodCategories");
+    modCategories.addEventListener("click", (event) => {
+      this[EXCECUTE_HANDLER](
+        hModCategories,
+        [],
+        "#mod-categories",
+        { action: "modCategories" },
+        "#",
+        event
+      );
+    });
   }
 
   bindNewDishForm(handler) {
@@ -587,27 +728,27 @@ class RestaurantView {
 
   showNewDishForm(categories, allergens) {
     this.dishes.replaceChildren();
-    if (this.dishes.children.length >= 1)
-      this.dishes.children[0].remove();
+    if (this.dishes.children.length >= 1) this.dishes.children[0].remove();
 
-    const container = document.createElement('div');
-    container.classList.add('container');
-    container.classList.add('my-3');
-    container.id = 'new-dish';
+    const container = document.createElement("div");
+    container.classList.add("container");
+    container.classList.add("my-3");
+    container.id = "new-dish";
 
-    const form = document.createElement('form');
-    form.name = 'fNewDish';
-    form.setAttribute('role', 'form');
-    form.setAttribute('novalidate', '');
-    form.classList.add('row');
-    form.classList.add('g-3');
+    const form = document.createElement("form");
+    form.name = "fNewDish";
+    form.setAttribute("role", "form");
+    form.setAttribute("novalidate", "");
+    form.classList.add("row");
+    form.classList.add("g-3");
 
     container.insertAdjacentHTML(
-      'afterbegin',
-      '<h1 class="display-5">Nuevo plato</h1>',
+      "afterbegin",
+      '<h1 class="display-5">Nuevo plato</h1>'
     );
     form.insertAdjacentHTML(
-      'beforeend',`
+      "beforeend",
+      `
 			<div class="col-md-6 mb-3">
 				<label class="form-label" for="ndTitle">Nombre *</label>
 				<div class="input-group">
@@ -658,13 +799,18 @@ class RestaurantView {
 					<div class="valid-feedback">Correcto.</div>
 				</div>
 			</div>
-      `);
-      const ndCategories = form.querySelector('#ndCategories');
-      for (const category of categories) {
-        ndCategories.insertAdjacentHTML('beforeend', `<option value="${category.name}">${category.name}</option>`);
-      }
-      form.insertAdjacentHTML(
-        'beforeend',`
+      `
+    );
+    const ndCategories = form.querySelector("#ndCategories");
+    for (const category of categories) {
+      ndCategories.insertAdjacentHTML(
+        "beforeend",
+        `<option value="${category.name}">${category.name}</option>`
+      );
+    }
+    form.insertAdjacentHTML(
+      "beforeend",
+      `
       <div class="col-md-6 mb-3">
 				<label class="form-label" for="ndAllergens">Alérgenos</label>
 			  <div class="input-group">
@@ -675,36 +821,44 @@ class RestaurantView {
 					<div class="valid-feedback">Correcto.</div>
 				</div>
 			</div>
-      `);
-      const ndAllergens = form.querySelector('#ndAllergens');
-      for (const allergen of allergens) {
-        ndAllergens.insertAdjacentHTML('beforeend', `<option value="${allergen.name}">${allergen.name}</option>`);
-      }
-      form.insertAdjacentHTML(
-        'beforeend',`
+      `
+    );
+    const ndAllergens = form.querySelector("#ndAllergens");
+    for (const allergen of allergens) {
+      ndAllergens.insertAdjacentHTML(
+        "beforeend",
+        `<option value="${allergen.name}">${allergen.name}</option>`
+      );
+    }
+    form.insertAdjacentHTML(
+      "beforeend",
+      `
 			<div class="mb-12">
 				<button class="btn btn-primary" type="submit">Enviar</button>
 				<button class="btn btn-primary" type="reset">Cancelar</button>
-			</div>`,
+			</div>`
     );
     container.append(form);
     this.dishes.append(container);
   }
 
   showNewDishModal(done, dish, error) {
-    const messageModalContainer = document.getElementById('messageModal');
-    const messageModal = new bootstrap.Modal('#messageModal');
+    const messageModalContainer = document.getElementById("messageModal");
+    const messageModal = new bootstrap.Modal("#messageModal");
 
-    const title = document.getElementById('messageModalTitle');
-    title.innerHTML = 'Nuevo Plato';
-    const body = messageModalContainer.querySelector('.modal-body');
+    const title = document.getElementById("messageModalTitle");
+    title.innerHTML = "Nuevo Plato";
+    const body = messageModalContainer.querySelector(".modal-body");
     body.replaceChildren();
     if (done) {
-      body.insertAdjacentHTML('afterbegin', `<div class="p-3">El plato <strong>${dish.name}</strong> ha sido creado correctamente.</div>`);
+      body.insertAdjacentHTML(
+        "afterbegin",
+        `<div class="p-3">El plato <strong>${dish.name}</strong> ha sido creado correctamente.</div>`
+      );
     } else {
       body.insertAdjacentHTML(
-        'afterbegin',
-        `<div class="error text-danger p-3"><i class="bi bi-exclamation-triangle"></i> El plato <strong>${dish.name}</strong> ya está creado.</div>`,
+        "afterbegin",
+        `<div class="error text-danger p-3"><i class="bi bi-exclamation-triangle"></i> El plato <strong>${dish.name}</strong> ya está creado.</div>`
       );
     }
     messageModal.show();
@@ -714,33 +868,34 @@ class RestaurantView {
       }
       document.fNewDish.ndTitle.focus();
     };
-    messageModalContainer.addEventListener('hidden.bs.modal', listener, { once: true });
+    messageModalContainer.addEventListener("hidden.bs.modal", listener, {
+      once: true,
+    });
   }
 
   showRemoveDishForm(categories) {
     this.dishes.replaceChildren();
-    if (this.dishes.children.length >= 1)
-      this.dishes.children[0].remove();
+    if (this.dishes.children.length >= 1) this.dishes.children[0].remove();
 
-  	const container = document.createElement('div');
-  	container.classList.add('container');
-  	container.classList.add('my-3');
-  	container.id = 'remove-dish';
+    const container = document.createElement("div");
+    container.classList.add("container");
+    container.classList.add("my-3");
+    container.id = "remove-dish";
 
     container.insertAdjacentHTML(
-      'afterbegin',
-      '<h1 class="display-5">Eliminar un plato</h1>',
+      "afterbegin",
+      '<h1 class="display-5">Eliminar un plato</h1>'
     );
 
-    const form = document.createElement('form');
-    form.name = 'fRemoveDish';
-    form.setAttribute('role', 'form');
-    form.setAttribute('novalidate', '');
-    form.classList.add('row');
-    form.classList.add('g-3');
+    const form = document.createElement("form");
+    form.name = "fRemoveDish";
+    form.setAttribute("role", "form");
+    form.setAttribute("novalidate", "");
+    form.classList.add("row");
+    form.classList.add("g-3");
 
     form.insertAdjacentHTML(
-      'beforeend',
+      "beforeend",
       `<div class="col-md-12 mb-3">
 				<label class="form-label" for="rdCategories">Categorías de platos</label>
 				<div class="input-group">
@@ -749,82 +904,100 @@ class RestaurantView {
 						<option disabled selected>Selecciona una categoría</option>
 					</select>
 				</div>
-			</div>`,
+			</div>`
     );
-    const rdCategories = form.querySelector('#rdCategories');
+    const rdCategories = form.querySelector("#rdCategories");
     for (const category of categories) {
-      rdCategories.insertAdjacentHTML('beforeend', `<option value="${category.name}">${category.name}</option>`);
+      rdCategories.insertAdjacentHTML(
+        "beforeend",
+        `<option value="${category.name}">${category.name}</option>`
+      );
     }
 
     container.append(form);
     container.insertAdjacentHTML(
-      'beforeend',
-      '<div id="product-list" class="container my-3"><div class="row"></div></div>',
+      "beforeend",
+      '<div id="product-list" class="container my-3"><div class="row"></div></div>'
     );
 
-  	this.dishes.append(container);
+    this.dishes.append(container);
   }
 
   showRemoveDishModal(done, product, error) {
-    const productList = document.getElementById('product-list');
-    const messageModalContainer = document.getElementById('messageModal');
-    const messageModal = new bootstrap.Modal('#messageModal');
+    const productList = document.getElementById("product-list");
+    const messageModalContainer = document.getElementById("messageModal");
+    const messageModal = new bootstrap.Modal("#messageModal");
 
-    const title = document.getElementById('messageModalTitle');
-    title.innerHTML = 'Plato eliminado';
-    const body = messageModalContainer.querySelector('.modal-body');
+    const title = document.getElementById("messageModalTitle");
+    title.innerHTML = "Plato eliminado";
+    const body = messageModalContainer.querySelector(".modal-body");
     body.replaceChildren();
     if (done) {
-      body.insertAdjacentHTML('afterbegin', `<div class="p-3">El producto <strong>${product.name}</strong> ha sido eliminado correctamente.</div>`);
+      body.insertAdjacentHTML(
+        "afterbegin",
+        `<div class="p-3">El producto <strong>${product.name}</strong> ha sido eliminado correctamente.</div>`
+      );
     } else {
       body.insertAdjacentHTML(
-        'afterbegin',
-        '<div class="error text-danger p-3"><i class="bi bi-exclamation-triangle"></i> El producto no existe en el manager.</div>',
+        "afterbegin",
+        '<div class="error text-danger p-3"><i class="bi bi-exclamation-triangle"></i> El producto no existe en el manager.</div>'
       );
     }
     messageModal.show();
     const listener = (event) => {
       if (done) {
-        const button = productList.querySelector(`a.btn[data-serial="${product.name}"]`);
+        const button = productList.querySelector(
+          `a.btn[data-serial="${product.name}"]`
+        );
         button.parentElement.parentElement.parentElement.remove();
       }
     };
-    messageModalContainer.addEventListener('hidden.bs.modal', listener, { once: true });
+    messageModalContainer.addEventListener("hidden.bs.modal", listener, {
+      once: true,
+    });
   }
 
   bindRemoveDishSelects(hCategories) {
-    const rdCategories = document.getElementById('rdCategories');
-    rdCategories.addEventListener('change', (event) => {
+    const rdCategories = document.getElementById("rdCategories");
+    rdCategories.addEventListener("change", (event) => {
       this[EXCECUTE_HANDLER](
         hCategories,
         [event.currentTarget.value],
-        '#remove-dish',
-        { action: 'removeDishByCategory', category: event.currentTarget.value },
-        '#remove-dish',
-        event,
+        "#remove-dish",
+        { action: "removeDishByCategory", category: event.currentTarget.value },
+        "#remove-dish",
+        event
       );
     });
   }
 
   showRemoveDishList(products) {
-    const listContainer = document.getElementById('product-list').querySelector('div.row');
+    const listContainer = document
+      .getElementById("product-list")
+      .querySelector("div.row");
     listContainer.replaceChildren();
 
     let exist = false;
     for (const product of products) {
       exist = true;
-      listContainer.insertAdjacentHTML('beforeend', `<div class="row d-flex justify-content-center">
+      listContainer.insertAdjacentHTML(
+        "beforeend",
+        `<div class="row d-flex justify-content-center">
       <div class="col-md-10">
         <div class="card">
           <div class="row align-items-center">
             <div class="col-md-6">
               <div class="images p-3">
-                <div class="text-center p-4"> <img id="main-image" src="${product.dish.image}"/> </div>
+                <div class="text-center p-4"> <img id="main-image" src="${
+                  product.dish.image
+                }"/> </div>
               </div>
             </div>
             <div class="col-md-6">
               <div class="product p-4">
-                <div class="mt-4 mb-3"> <span class="text-uppercase brand">${product.dish.name}</span>
+                <div class="mt-4 mb-3"> <span class="text-uppercase brand">${
+                  product.dish.name
+                }</span>
                   <h5 class="text-uppercase">${product.dish.description}</h5>
                 </div>
                 <div class="sizes mt-5">
@@ -832,55 +1005,61 @@ class RestaurantView {
                 </div>
                 <div class="cart mt-4 align-items-center">${product.dish.stringIngredientes()}</div>
                 <div class="cart mt-4 align-items-center">
-                  <a href="#" data-serial="${product.dish.name}" class="btn btn-primary float-right"> Eliminar </a>
+                  <a href="#" data-serial="${
+                    product.dish.name
+                  }" class="btn btn-primary float-right"> Eliminar </a>
                 </div>
               </div>
             </div>
           </div>
         </div>
       </div>
-    </div>`);
+    </div>`
+      );
     }
     if (!exist) {
-      listContainer.insertAdjacentHTML('beforeend', '<p class="text-danger"><i class="bi bi-exclamation-triangle"></i> No existen productos para esta categoría.</p>');
+      listContainer.insertAdjacentHTML(
+        "beforeend",
+        '<p class="text-danger"><i class="bi bi-exclamation-triangle"></i> No existen productos para esta categoría.</p>'
+      );
     }
   }
 
   bindRemoveDish(handler) {
-    const productList = document.getElementById('product-list');
-    const buttons = productList.querySelectorAll('a.btn');
+    const productList = document.getElementById("product-list");
+    const buttons = productList.querySelectorAll("a.btn");
     for (const button of buttons) {
-      button.addEventListener('click', function (event) {
+      button.addEventListener("click", function (event) {
         handler(this.dataset.serial);
         event.preventDefault();
       });
     }
   }
 
-  showAssignsDishesForm(menus){
+  showAssignsDishesForm(menus) {
     this.dishes.replaceChildren();
-    if (this.dishes.children.length >= 1)
-      this.dishes.children[0].remove();
+    if (this.dishes.children.length >= 1) this.dishes.children[0].remove();
 
-  	const container = document.createElement('div');
-  	container.classList.add('container');
-  	container.classList.add('my-3');
-  	container.id = 'assigns-dishes';
+    const container = document.createElement("div");
+    container.classList.add("container");
+    container.classList.add("my-3");
+    container.id = "assigns-dishes";
 
     container.insertAdjacentHTML(
-      'afterbegin',
-      '<h1 class="display-5">Asignar/Desasignar platos</h1>',
+      "afterbegin",
+      '<h1 class="display-5">Asignar/Desasignar platos</h1>'
     );
 
-    const form = document.createElement('form');
-    form.name = 'fAssignsDishes';
-    form.setAttribute('role', 'form');
-    form.setAttribute('novalidate', '');
-    form.classList.add('row');
-    form.classList.add('g-3');
+    const form = document.createElement("form");
+    form.name = "fAssignsDishes";
+    form.setAttribute("role", "form");
+    form.setAttribute("novalidate", "");
+    form.classList.add("row");
+    form.classList.add("g-3");
 
     form.insertAdjacentHTML(
-      'beforeend',`
+      "beforeend",
+      `
       <div class="col-md-12 mb-3">
 				<label class="form-label" for="adMenus">Menús</label>
 				<div class="input-group">
@@ -892,35 +1071,40 @@ class RestaurantView {
 					<div class="valid-feedback">Correcto.</div>
 				</div>
 			</div>
-      `);
-      const adMenus = form.querySelector('#adMenus');
-      for (const menu of menus) {
-        adMenus.insertAdjacentHTML('beforeend', `<option value="${menu.menu.name}">${menu.menu.name}</option>`);
-      }
-      
-      
+      `
+    );
+    const adMenus = form.querySelector("#adMenus");
+    for (const menu of menus) {
+      adMenus.insertAdjacentHTML(
+        "beforeend",
+        `<option value="${menu.menu.name}">${menu.menu.name}</option>`
+      );
+    }
+
     container.append(form);
     this.dishes.append(container);
   }
 
   bindAssignationDishes(hAssignsDishes) {
-    const adMenus = document.getElementById('adMenus');
-    adMenus.addEventListener('change', (event) => {
+    const adMenus = document.getElementById("adMenus");
+    adMenus.addEventListener("change", (event) => {
       this[EXCECUTE_HANDLER](
         hAssignsDishes,
         [event.currentTarget.value],
-        '#assigns-dishes',
-        { action: 'assignationDishes', menu: event.currentTarget.value },
-        '#assigns-dishes',
-        event,
+        "#assigns-dishes",
+        { action: "assignationDishes", menu: event.currentTarget.value },
+        "#assigns-dishes",
+        event
       );
     });
   }
 
   showAssignsDishesSelects(productsInMenu, productsOutsideMenu) {
     const form = document.getElementsByName("fAssignsDishes")[0];
-    
-    form.insertAdjacentHTML('beforeend', `<div class="row d-flex justify-content-center">
+
+    form.insertAdjacentHTML(
+      "beforeend",
+      `<div class="row d-flex justify-content-center">
       <div class="col-md-6 mb-3">
 				<label class="form-label" for="adDeasDishes">Platos a desasignar</label>
 			  <div class="input-group">
@@ -931,13 +1115,19 @@ class RestaurantView {
 					<div class="valid-feedback">Correcto.</div>
 				</div>
 			</div>
-    `);
-    const adDishes = form.querySelector('#adDeasDishes');
+    `
+    );
+    const adDishes = form.querySelector("#adDeasDishes");
     for (const dish of productsInMenu) {
-        adDishes.insertAdjacentHTML('beforeend', `<option value="${dish.name}">${dish.name}</option>`);
+      adDishes.insertAdjacentHTML(
+        "beforeend",
+        `<option value="${dish.name}">${dish.name}</option>`
+      );
     }
 
-    form.insertAdjacentHTML('beforeend', `<div class="row d-flex justify-content-center">
+    form.insertAdjacentHTML(
+      "beforeend",
+      `<div class="row d-flex justify-content-center">
       <div class="col-md-6 mb-3">
 				<label class="form-label" for="adAssDishes">Platos a asignar</label>
 			  <div class="input-group">
@@ -948,13 +1138,19 @@ class RestaurantView {
 					<div class="valid-feedback">Correcto.</div>
 				</div>
 			</div>
-    `);
-    const adDeasDishes = form.querySelector('#adAssDishes');
+    `
+    );
+    const adDeasDishes = form.querySelector("#adAssDishes");
     for (const dish of productsOutsideMenu) {
-        adDeasDishes.insertAdjacentHTML('beforeend', `<option value="${dish.name}">${dish.name}</option>`);
+      adDeasDishes.insertAdjacentHTML(
+        "beforeend",
+        `<option value="${dish.name}">${dish.name}</option>`
+      );
     }
 
-    form.insertAdjacentHTML('beforeend', `<div class="row d-flex justify-content-center">
+    form.insertAdjacentHTML(
+      "beforeend",
+      `<div class="row d-flex justify-content-center">
       <div class="col-md-6 mb-3">
 				<label class="form-label" for="adDish1">Platos a cambiar de posición</label>
 			  <div class="input-group">
@@ -965,12 +1161,18 @@ class RestaurantView {
 					<div class="valid-feedback">Correcto.</div>
 				</div>
 			</div>
-    `);
-    const adDish1 = form.querySelector('#adDish1');
+    `
+    );
+    const adDish1 = form.querySelector("#adDish1");
     for (const dish of productsInMenu) {
-        adDish1.insertAdjacentHTML('beforeend', `<option value="${dish.name}">${dish.name}</option>`);
+      adDish1.insertAdjacentHTML(
+        "beforeend",
+        `<option value="${dish.name}">${dish.name}</option>`
+      );
     }
-    form.insertAdjacentHTML('beforeend', `<div class="row d-flex justify-content-center">
+    form.insertAdjacentHTML(
+      "beforeend",
+      `<div class="row d-flex justify-content-center">
       <div class="col-md-6 mb-3">
 				<label class="form-label" for="adDish2">Platos a cambiar de posición</label>
 			  <div class="input-group">
@@ -981,38 +1183,46 @@ class RestaurantView {
 					<div class="valid-feedback">Correcto.</div>
 				</div>
 			</div>
-    `);
-    const adDish2 = form.querySelector('#adDish2');
+    `
+    );
+    const adDish2 = form.querySelector("#adDish2");
     for (const dish of productsInMenu) {
-        adDish2.insertAdjacentHTML('beforeend', `<option value="${dish.name}">${dish.name}</option>`);
+      adDish2.insertAdjacentHTML(
+        "beforeend",
+        `<option value="${dish.name}">${dish.name}</option>`
+      );
     }
     form.insertAdjacentHTML(
-      'beforeend',`
+      "beforeend",
+      `
     <div class="mb-12">
       <button class="btn btn-primary" type="submit">Enviar</button>
       <button class="btn btn-primary" type="reset">Cancelar</button>
-    </div>`,
+    </div>`
     );
   }
 
-  bindAssignationDishesForm(handler){
-		assignationDishesValidation(handler);
-	}
+  bindAssignationDishesForm(handler) {
+    assignationDishesValidation(handler);
+  }
 
   showDishesAssignationModal(done, error) {
-    const messageModalContainer = document.getElementById('messageModal');
-    const messageModal = new bootstrap.Modal('#messageModal');
+    const messageModalContainer = document.getElementById("messageModal");
+    const messageModal = new bootstrap.Modal("#messageModal");
 
-    const title = document.getElementById('messageModalTitle');
-    title.innerHTML = 'Asignación y orden de platos completada';
-    const body = messageModalContainer.querySelector('.modal-body');
+    const title = document.getElementById("messageModalTitle");
+    title.innerHTML = "Asignación y orden de platos completada";
+    const body = messageModalContainer.querySelector(".modal-body");
     body.replaceChildren();
     if (done) {
-      body.insertAdjacentHTML('afterbegin', `<div class="p-3">Asignación y orden de platos ha sido  completada</div>`);
+      body.insertAdjacentHTML(
+        "afterbegin",
+        `<div class="p-3">Asignación y orden de platos ha sido  completada</div>`
+      );
     } else {
       body.insertAdjacentHTML(
-        'afterbegin',
-        `<div class="error text-danger p-3"><i class="bi bi-exclamation-triangle"></i>Ha habido un fallo en la asignación/orden de productos</div>`,
+        "afterbegin",
+        `<div class="error text-danger p-3"><i class="bi bi-exclamation-triangle"></i>Ha habido un fallo en la asignación/orden de productos</div>`
       );
     }
     messageModal.show();
@@ -1022,24 +1232,26 @@ class RestaurantView {
       }
       document.fAssignsDishes.adMenus.focus();
     };
-    messageModalContainer.addEventListener('hidden.bs.modal', listener, { once: true });
+    messageModalContainer.addEventListener("hidden.bs.modal", listener, {
+      once: true,
+    });
   }
 
   showNewCategoryForm() {
     this.dishes.replaceChildren();
     if (this.dishes.children.length >= 1) this.categories.children[0].remove();
 
-    const container = document.createElement('div');
-    container.classList.add('container');
-    container.classList.add('my-3');
-    container.id = 'new-category';
+    const container = document.createElement("div");
+    container.classList.add("container");
+    container.classList.add("my-3");
+    container.id = "new-category";
 
     container.insertAdjacentHTML(
-      'afterbegin',
-      '<h1 class="display-5">Nueva categoría</h1>',
+      "afterbegin",
+      '<h1 class="display-5">Nueva categoría</h1>'
     );
     container.insertAdjacentHTML(
-      'beforeend',
+      "beforeend",
       `<form name="fNewCategory" role="form" class="row g-3" novalidate>
 			<div class="col-md-6 mb-3">
 				<label class="form-label" for="ncTitle">Nombre *</label>
@@ -1074,29 +1286,32 @@ class RestaurantView {
 				<button class="btn btn-primary" type="submit">Enviar</button>
 				<button class="btn btn-primary" type="reset">Cancelar</button>
 			</div>
-		</form>`,
+		</form>`
     );
     this.dishes.append(container);
   }
 
-  bindNewCategoryForm(handler){
+  bindNewCategoryForm(handler) {
     newCategoryValidation(handler);
   }
-  
-  showNewCategoryModal(done, cat, error) {
-    const messageModalContainer = document.getElementById('messageModal');
-    const messageModal = new bootstrap.Modal('#messageModal');
 
-    const title = document.getElementById('messageModalTitle');
-    title.innerHTML = 'Nueva Categoría';
-    const body = messageModalContainer.querySelector('.modal-body');
+  showNewCategoryModal(done, cat, error) {
+    const messageModalContainer = document.getElementById("messageModal");
+    const messageModal = new bootstrap.Modal("#messageModal");
+
+    const title = document.getElementById("messageModalTitle");
+    title.innerHTML = "Nueva Categoría";
+    const body = messageModalContainer.querySelector(".modal-body");
     body.replaceChildren();
     if (done) {
-      body.insertAdjacentHTML('afterbegin', `<div class="p-3">La categoría <strong>${cat.name}</strong> ha sido creada correctamente.</div>`);
+      body.insertAdjacentHTML(
+        "afterbegin",
+        `<div class="p-3">La categoría <strong>${cat.name}</strong> ha sido creada correctamente.</div>`
+      );
     } else {
       body.insertAdjacentHTML(
-        'afterbegin',
-        `<div class="error text-danger p-3"><i class="bi bi-exclamation-triangle"></i> La categoría <strong>${cat.name}</strong> ya está creada.</div>`,
+        "afterbegin",
+        `<div class="error text-danger p-3"><i class="bi bi-exclamation-triangle"></i> La categoría <strong>${cat.name}</strong> ya está creada.</div>`
       );
     }
     messageModal.show();
@@ -1106,29 +1321,31 @@ class RestaurantView {
       }
       document.fNewCategory.ncTitle.focus();
     };
-    messageModalContainer.addEventListener('hidden.bs.modal', listener, { once: true });
+    messageModalContainer.addEventListener("hidden.bs.modal", listener, {
+      once: true,
+    });
   }
 
   showRemoveCategoryForm(categories) {
     this.dishes.replaceChildren();
     if (this.dishes.children.length >= 1) this.dishes.children[0].remove();
 
-    const container = document.createElement('div');
-    container.classList.add('container');
-    container.classList.add('my-3');
-    container.id = 'remove-category';
+    const container = document.createElement("div");
+    container.classList.add("container");
+    container.classList.add("my-3");
+    container.id = "remove-category";
     container.insertAdjacentHTML(
-      'afterbegin',
-      '<h1 class="display-5">Eliminar una categoría</h1><br>',
+      "afterbegin",
+      '<h1 class="display-5">Eliminar una categoría</h1><br>'
     );
 
-
-
-    const row = document.createElement('div');
-    row.classList.add('row');
+    const row = document.createElement("div");
+    row.classList.add("row");
 
     for (const category of categories) {
-      row.insertAdjacentHTML('beforeend', `<div class="col-lg-3 col-md-6"><a data-category="${category.name}" href="#product-list">
+      row.insertAdjacentHTML(
+        "beforeend",
+        `<div class="col-lg-3 col-md-6"><a data-category="${category.name}" href="#product-list">
         <div class="cat-list-image"><img alt="${category.name}" src="${category.url}" />
         </div>
         <div class="cat-list-text">
@@ -1137,38 +1354,42 @@ class RestaurantView {
         </div>
 				<div><button class="btn btn-primary" data-category="${category.name}" type='button'>Eliminar</button></div>
       </a>
-    </div>`);
+    </div>`
+      );
     }
     container.append(row);
     this.dishes.append(container);
   }
 
   showRemoveCategoryModal(done, cat, error) {
-    const messageModalContainer = document.getElementById('messageModal');
-    const messageModal = new bootstrap.Modal('#messageModal');
+    const messageModalContainer = document.getElementById("messageModal");
+    const messageModal = new bootstrap.Modal("#messageModal");
 
-    const title = document.getElementById('messageModalTitle');
-    title.innerHTML = 'Borrado de categoría';
-    const body = messageModalContainer.querySelector('.modal-body');
+    const title = document.getElementById("messageModalTitle");
+    title.innerHTML = "Borrado de categoría";
+    const body = messageModalContainer.querySelector(".modal-body");
     body.replaceChildren();
     if (done) {
-      body.insertAdjacentHTML('afterbegin', `<div class="p-3">La categoría <strong>${cat.name}</strong> ha sido eliminada correctamente.</div>`);
+      body.insertAdjacentHTML(
+        "afterbegin",
+        `<div class="p-3">La categoría <strong>${cat.name}</strong> ha sido eliminada correctamente.</div>`
+      );
     } else {
       body.insertAdjacentHTML(
-        'afterbegin',
-        `<div class="error text-danger p-3"><i class="bi bi-exclamation-triangle"></i> La categoría <strong>${cat.name}</strong> no se ha podido borrar.</div>`,
+        "afterbegin",
+        `<div class="error text-danger p-3"><i class="bi bi-exclamation-triangle"></i> La categoría <strong>${cat.name}</strong> no se ha podido borrar.</div>`
       );
     }
     messageModal.show();
   }
 
   bindRemoveCategoryForm(handler) {
-    const removeContainer = document.getElementById('remove-category');
-    const buttons = removeContainer.getElementsByTagName('button');
+    const removeContainer = document.getElementById("remove-category");
+    const buttons = removeContainer.getElementsByTagName("button");
     for (const button of buttons) {
-      button.addEventListener('click', function (event) {
-      	handler(this.dataset.category);
-    	});
+      button.addEventListener("click", function (event) {
+        handler(this.dataset.category);
+      });
     }
   }
 
@@ -1176,17 +1397,17 @@ class RestaurantView {
     this.dishes.replaceChildren();
     if (this.dishes.children.length >= 1) this.categories.children[0].remove();
 
-    const container = document.createElement('div');
-    container.classList.add('container');
-    container.classList.add('my-3');
-    container.id = 'new-restaurant';
+    const container = document.createElement("div");
+    container.classList.add("container");
+    container.classList.add("my-3");
+    container.id = "new-restaurant";
 
     container.insertAdjacentHTML(
-      'afterbegin',
-      '<h1 class="display-5">Nuevo restaurante</h1>',
+      "afterbegin",
+      '<h1 class="display-5">Nuevo restaurante</h1>'
     );
     container.insertAdjacentHTML(
-      'beforeend',
+      "beforeend",
       `<form name="fNewRestaurant" role="form" class="row g-3" novalidate>
 			<div class="col-md-6 mb-3">
 				<label class="form-label" for="ncTitle">Nombre *</label>
@@ -1231,29 +1452,32 @@ class RestaurantView {
 				<button class="btn btn-primary" type="submit">Enviar</button>
 				<button class="btn btn-primary" type="reset">Cancelar</button>
 			</div>
-		</form>`,
+		</form>`
     );
     this.dishes.append(container);
   }
 
-  bindNewRestaurantForm(handler){
+  bindNewRestaurantForm(handler) {
     newRestaurantValidation(handler);
   }
-  
-  showNewRestaurantModal(done, rest, error) {
-    const messageModalContainer = document.getElementById('messageModal');
-    const messageModal = new bootstrap.Modal('#messageModal');
 
-    const title = document.getElementById('messageModalTitle');
-    title.innerHTML = 'Nuevo Restaurante';
-    const body = messageModalContainer.querySelector('.modal-body');
+  showNewRestaurantModal(done, rest, error) {
+    const messageModalContainer = document.getElementById("messageModal");
+    const messageModal = new bootstrap.Modal("#messageModal");
+
+    const title = document.getElementById("messageModalTitle");
+    title.innerHTML = "Nuevo Restaurante";
+    const body = messageModalContainer.querySelector(".modal-body");
     body.replaceChildren();
     if (done) {
-      body.insertAdjacentHTML('afterbegin', `<div class="p-3">El restaurante <strong>${rest.name}</strong> ha sido creado correctamente.</div>`);
+      body.insertAdjacentHTML(
+        "afterbegin",
+        `<div class="p-3">El restaurante <strong>${rest.name}</strong> ha sido creado correctamente.</div>`
+      );
     } else {
       body.insertAdjacentHTML(
-        'afterbegin',
-        `<div class="error text-danger p-3"><i class="bi bi-exclamation-triangle"></i> El restaurante <strong>${rest.name}</strong> ya está creado.</div>`,
+        "afterbegin",
+        `<div class="error text-danger p-3"><i class="bi bi-exclamation-triangle"></i> El restaurante <strong>${rest.name}</strong> ya está creado.</div>`
       );
     }
     messageModal.show();
@@ -1263,33 +1487,35 @@ class RestaurantView {
       }
       document.fNewRestaurant.ncTitle.focus();
     };
-    messageModalContainer.addEventListener('hidden.bs.modal', listener, { once: true });
+    messageModalContainer.addEventListener("hidden.bs.modal", listener, {
+      once: true,
+    });
   }
 
-  showModifyCategoriesForm(dishes){
+  showModifyCategoriesForm(dishes) {
     this.dishes.replaceChildren();
-    if (this.dishes.children.length >= 1)
-      this.dishes.children[0].remove();
+    if (this.dishes.children.length >= 1) this.dishes.children[0].remove();
 
-  	const container = document.createElement('div');
-  	container.classList.add('container');
-  	container.classList.add('my-3');
-  	container.id = 'mod-categories';
+    const container = document.createElement("div");
+    container.classList.add("container");
+    container.classList.add("my-3");
+    container.id = "mod-categories";
 
     container.insertAdjacentHTML(
-      'afterbegin',
-      '<h1 class="display-5">Modificar categorías</h1>',
+      "afterbegin",
+      '<h1 class="display-5">Modificar categorías</h1>'
     );
 
-    const form = document.createElement('form');
-    form.name = 'fModCategories';
-    form.setAttribute('role', 'form');
-    form.setAttribute('novalidate', '');
-    form.classList.add('row');
-    form.classList.add('g-3');
+    const form = document.createElement("form");
+    form.name = "fModCategories";
+    form.setAttribute("role", "form");
+    form.setAttribute("novalidate", "");
+    form.classList.add("row");
+    form.classList.add("g-3");
 
     form.insertAdjacentHTML(
-      'beforeend',`
+      "beforeend",
+      `
       <div class="col-md-12 mb-3">
 				<label class="form-label" for="mcDishes">Platos</label>
 				<div class="input-group">
@@ -1301,35 +1527,40 @@ class RestaurantView {
 					<div class="valid-feedback">Correcto.</div>
 				</div>
 			</div>
-      `);
-      const mcDishes = form.querySelector('#mcDishes');
-      for (const dish of dishes) {
-        mcDishes.insertAdjacentHTML('beforeend', `<option value="${dish.dish.name}">${dish.dish.name}</option>`);
-      }
-      
-      
+      `
+    );
+    const mcDishes = form.querySelector("#mcDishes");
+    for (const dish of dishes) {
+      mcDishes.insertAdjacentHTML(
+        "beforeend",
+        `<option value="${dish.dish.name}">${dish.dish.name}</option>`
+      );
+    }
+
     container.append(form);
     this.dishes.append(container);
   }
 
   bindModifyCategories(hModifyCategories) {
-    const mcDishes = document.getElementById('mcDishes');
-    mcDishes.addEventListener('change', (event) => {
+    const mcDishes = document.getElementById("mcDishes");
+    mcDishes.addEventListener("change", (event) => {
       this[EXCECUTE_HANDLER](
         hModifyCategories,
         [event.currentTarget.value],
-        '#mod-categories',
-        { action: 'categoriesModification', dish: event.currentTarget.value },
-        '#mod-categories',
-        event,
+        "#mod-categories",
+        { action: "categoriesModification", dish: event.currentTarget.value },
+        "#mod-categories",
+        event
       );
     });
   }
 
   showModifyCategoriesSelects(categoriesInDish, categoriesOutsideDish) {
     const form = document.getElementsByName("fModCategories")[0];
-    
-    form.insertAdjacentHTML('beforeend', `<div class="row d-flex justify-content-center">
+
+    form.insertAdjacentHTML(
+      "beforeend",
+      `<div class="row d-flex justify-content-center">
       <div class="col-md-6 mb-3">
 				<label class="form-label" for="mcDeasCat">Categorías a desasignar</label>
 			  <div class="input-group">
@@ -1340,13 +1571,19 @@ class RestaurantView {
 					<div class="valid-feedback">Correcto.</div>
 				</div>
 			</div>
-    `);
-    const mcDeasCat = form.querySelector('#mcDeasCat');
+    `
+    );
+    const mcDeasCat = form.querySelector("#mcDeasCat");
     for (const cat of categoriesInDish) {
-      mcDeasCat.insertAdjacentHTML('beforeend', `<option value="${cat.name}">${cat.name}</option>`);
+      mcDeasCat.insertAdjacentHTML(
+        "beforeend",
+        `<option value="${cat.name}">${cat.name}</option>`
+      );
     }
 
-    form.insertAdjacentHTML('beforeend', `<div class="row d-flex justify-content-center">
+    form.insertAdjacentHTML(
+      "beforeend",
+      `<div class="row d-flex justify-content-center">
       <div class="col-md-6 mb-3">
 				<label class="form-label" for="mcAssCat">Categorías a asignar</label>
 			  <div class="input-group">
@@ -1357,39 +1594,47 @@ class RestaurantView {
 					<div class="valid-feedback">Correcto.</div>
 				</div>
 			</div>
-    `);
-    const mcAssCat = form.querySelector('#mcAssCat');
+    `
+    );
+    const mcAssCat = form.querySelector("#mcAssCat");
     for (const cat of categoriesOutsideDish) {
-      mcAssCat.insertAdjacentHTML('beforeend', `<option value="${cat.name}">${cat.name}</option>`);
+      mcAssCat.insertAdjacentHTML(
+        "beforeend",
+        `<option value="${cat.name}">${cat.name}</option>`
+      );
     }
 
     form.insertAdjacentHTML(
-      'beforeend',`
+      "beforeend",
+      `
     <div class="mb-12">
       <button class="btn btn-primary" type="submit">Enviar</button>
       <button class="btn btn-primary" type="reset">Cancelar</button>
-    </div>`,
+    </div>`
     );
   }
 
-  bindModifyCategoriesForm(handler){
-		modCategoriesValidation(handler);
-	}
+  bindModifyCategoriesForm(handler) {
+    modCategoriesValidation(handler);
+  }
 
   showModifyCategoriesModal(done, error) {
-    const messageModalContainer = document.getElementById('messageModal');
-    const messageModal = new bootstrap.Modal('#messageModal');
+    const messageModalContainer = document.getElementById("messageModal");
+    const messageModal = new bootstrap.Modal("#messageModal");
 
-    const title = document.getElementById('messageModalTitle');
-    title.innerHTML = 'Modificación de categorías';
-    const body = messageModalContainer.querySelector('.modal-body');
+    const title = document.getElementById("messageModalTitle");
+    title.innerHTML = "Modificación de categorías";
+    const body = messageModalContainer.querySelector(".modal-body");
     body.replaceChildren();
     if (done) {
-      body.insertAdjacentHTML('afterbegin', `<div class="p-3">Modificación de categorías completada</div>`);
+      body.insertAdjacentHTML(
+        "afterbegin",
+        `<div class="p-3">Modificación de categorías completada</div>`
+      );
     } else {
       body.insertAdjacentHTML(
-        'afterbegin',
-        `<div class="error text-danger p-3"><i class="bi bi-exclamation-triangle"></i>Ha habido un fallo en la modificación de categorías</div>`,
+        "afterbegin",
+        `<div class="error text-danger p-3"><i class="bi bi-exclamation-triangle"></i>Ha habido un fallo en la modificación de categorías</div>`
       );
     }
     messageModal.show();
@@ -1399,9 +1644,375 @@ class RestaurantView {
       }
       document.fModCategories.mcDishes.focus();
     };
-    messageModalContainer.addEventListener('hidden.bs.modal', listener, { once: true });
+    messageModalContainer.addEventListener("hidden.bs.modal", listener, {
+      once: true,
+    });
   }
-  
+
+  showCookiesMessage() {
+    const toast = `<div class="fixed-top p-5 mt-5">
+			<div id="cookies-message" class="toast fade show bg-dark text-white w-100 mw-100" role="alert" aria-live="assertive" aria-atomic="true">
+				<div class="toast-header">
+					<h4 class="me-auto">Aviso de uso de cookies</h4>
+					<button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close" id="btnDismissCookie"></button>
+				</div>
+				<div class="toast-body p-4 d-flex flex-column">
+					<p>
+						Este sitio web almacenda datos en cookies para activar su funcionalidad, entre las que se encuentra
+						datos analíticos y personalización. Para poder utilizar este sitio, estás automáticamente aceptando
+						que
+						utilizamos cookies.
+					</p>
+					<div class="ml-auto">
+						<button type="button" class="btn btn-outline-light mr-3 deny" id="btnDenyCookie" data-bs-dismiss="toast">
+							Denegar
+						</button>
+						<button type="button" class="btn btn-primary" id="btnAcceptCookie" data-bs-dismiss="toast">
+							Aceptar
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>`;
+    document.body.insertAdjacentHTML("afterbegin", toast);
+
+    const cookiesMessage = document.getElementById("cookies-message");
+    cookiesMessage.addEventListener("hidden.bs.toast", (event) => {
+      event.currentTarget.parentElement.remove();
+    });
+
+    const btnAcceptCookie = document.getElementById("btnAcceptCookie");
+    btnAcceptCookie.addEventListener("click", (event) => {
+      setCookie("accetedCookieMessage", "true", 1);
+    });
+
+    const denyCookieFunction = (event) => {
+      this.main.replaceChildren();
+      this.main.insertAdjacentHTML(
+        "afterbegin",
+        `<div class="container my-3"><div class="alert alert-warning" role="alert">
+					<strong>Para utilizar esta web es necesario aceptar el uso de cookies. Debe recargar la página y aceptar las condicones para seguir navegando. Gracias.</strong>
+				</div></div>`
+      );
+      this.categories.remove();
+      this.menu.remove();
+    };
+    const btnDenyCookie = document.getElementById("btnDenyCookie");
+    btnDenyCookie.addEventListener("click", denyCookieFunction);
+    const btnDismissCookie = document.getElementById("btnDismissCookie");
+    btnDismissCookie.addEventListener("click", denyCookieFunction);
+  }
+
+  showIdentificationLink() {
+    const userArea = document.getElementById("userArea");
+    userArea.replaceChildren();
+    userArea.insertAdjacentHTML(
+      "afterbegin",
+      `<div class="account d-flex flex-column">
+			<a id="login" href="#"> Identificate</a>
+		</div>`
+    );
+  }
+
+  bindIdentificationLink(handler) {
+    const login = document.getElementById("login");
+    login.addEventListener("click", (event) => {
+      this[EXCECUTE_HANDLER](
+        handler,
+        [],
+        "main",
+        { action: "login" },
+        "#",
+        event
+      );
+    });
+  }
+
+  showLogin() {
+    this.dishes.replaceChildren();
+    const login = `<div class="container h-100">
+			<div class="d-flex justify-content-center h-100">
+				<div class="user_card">
+					<div class="d-flex justify-content-center form_container">
+					<form name="fLogin" role="form" novalidate>
+							<div class="input-group mb-3">
+								<div class="input-group-append">
+									<span class="input-group-text"><i class="bi bi-person-circle"></i></span>
+								</div>
+								<input type="text" name="username" class="form-control input_user" value="" placeholder="usuario">
+							</div>
+							<div class="input-group mb-2">
+								<div class="input-group-append">
+									<span class="input-group-text"><i class="bi bi-key-fill"></i></span>
+								</div>
+								<input type="password" name="password" class="form-control input_pass" value="" placeholder="contraseña">
+							</div>
+							<div class="form-group">
+								<div class="custom-control custom-checkbox">
+									<input name="remember" type="checkbox" class="custom-control-input" id="customControlInline">
+									<label class="custom-control-label" for="customControlInline">Recuerdame</label>
+								</div>
+							</div>
+								<div class="d-flex justify-content-center mt-3 login_container">
+									<button class="btn login_btn" type="submit">Acceder</button>
+						</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>`;
+    this.dishes.insertAdjacentHTML("afterbegin", login);
+  }
+
+  bindLogin(handler) {
+    const form = document.forms.fLogin;
+    form.addEventListener("submit", (event) => {
+      handler(form.username.value, form.password.value, form.remember.checked);
+      event.preventDefault();
+    });
+  }
+
+  showInvalidUserMessage() {
+    this.dishes.insertAdjacentHTML(
+      "beforeend",
+      `<div class="container my-3"><div class="alert alert-warning" role="alert">
+		<strong>El usuario y la contraseña no son válidos. Inténtelo nuevamente.</strong>
+	</div></div>`
+    );
+    document.forms.fLogin.reset();
+    document.forms.fLogin.username.focus();
+  }
+
+  initHistory() {
+    history.replaceState({ action: "init" }, null);
+  }
+
+  showAuthUserProfile(user) {
+    const userArea = document.getElementById("userArea");
+    userArea.replaceChildren();
+    userArea.insertAdjacentHTML(
+      "afterbegin",
+      `<div class="account d-flex mx-2 flex-column">
+				${user.username} <a id="aCloseSession" href="#">Cerrar sesión</a>
+			</div>
+			<div class="image">
+				<img alt="${user.username}" src="./img/user.png" />
+			</div>`
+    );
+  }
+
+  setUserCookie(user) {
+    setCookie("activeUser", user.username, 1);
+  }
+
+  deleteUserCookie() {
+    setCookie("activeUser", "", 0);
+  }
+
+  removeAdminMenu() {
+    const adminMenu = document.getElementById("navServices");
+    if (adminMenu) adminMenu.parentElement.remove();
+  }
+
+  removeDishesMenu() {
+    const dishMenu = document.getElementById("favDishes");
+    if (dishMenu) dishMenu.parentElement.remove();
+  }
+
+  bindCloseSession(handler) {
+    document
+      .getElementById("aCloseSession")
+      .addEventListener("click", (event) => {
+        handler();
+        event.preventDefault();
+      });
+  }
+
+  showDishesMenu() {
+    const menuOption = document.createElement("li");
+    menuOption.classList.add("nav-item");
+    menuOption.classList.add("dropdown");
+    menuOption.insertAdjacentHTML(
+      "afterbegin",
+      '<a class="nav-link dropdown-toggle" href="#" id="favDishes" role="button" data-bs-toggle="dropdown" aria-expanded="false">Platos favoritos</a>'
+    );
+    const suboptions = document.createElement("ul");
+    suboptions.classList.add("dropdown-menu");
+    suboptions.insertAdjacentHTML(
+      "beforeend",
+      '<li><a id="lshowDishes" class="dropdown-item" href="#show-dishes">Mostrar Platos</a></li>'
+    );
+    suboptions.insertAdjacentHTML(
+      "beforeend",
+      '<li><a id="lfavDishes" class="dropdown-item" href="#fav-dishes">Mostrar platos favoritos</a></li>'
+    );
+    menuOption.append(suboptions);
+    this.menu.append(menuOption);
+  }
+
+  bindDishesMenu(hShowDishes, hFavDishes) {
+    const showDish = document.getElementById("lshowDishes");
+    showDish.addEventListener("click", (event) => {
+      this[EXCECUTE_HANDLER](
+        hShowDishes,
+        [],
+        "#show-dishes",
+        { action: "showDishes" },
+        "#",
+        event
+      );
+    });
+    const favDishesLink = document.getElementById("lfavDishes");
+    favDishesLink.addEventListener("click", (event) => {
+      this[EXCECUTE_HANDLER](
+        hFavDishes,
+        [],
+        "#fav-dishes",
+        { action: "favDishes" },
+        "#",
+        event
+      );
+    });
+  }
+
+  showAllDishes(dishes) {
+    //Cogemos los datos del iterador
+    const allDishes = [...dishes];
+
+    this.dishes.replaceChildren();
+    if (this.dishes.children.length > 1) this.dishes.children[1].remove();
+    const container = document.createElement("div");
+    container.id = "rand-list";
+    container.classList.add("container");
+    container.classList.add("my-3");
+    container.insertAdjacentHTML("beforeend", '<div class="row"> </div>');
+
+    for (const product of allDishes) {
+      const div = document.createElement("div");
+      div.classList.add("col-md-4");
+      div.insertAdjacentHTML(
+        "beforeend",
+        `<figure class="card card-product-grid card-lg"> <a data-serial="${product.dish.name}" href="#single-product" class="img-wrap"><img class="${product.dish.constructor.name}-style" src="${product.dish.image}"></a>
+					<figcaption class="info-wrap">
+						<div class="row">
+							<div class="col-md-12"> <a data-serial="${product.dish.name}" href="#single-product" class="title">${product.dish.name}</a> </div>
+						</div>
+            <div class="cart mt-4 align-items-center">
+										<button id="b-fav" data-serial="${product.dish.name}" class="btn btn-primary text-uppercase mr-2 px-4">Añadir a favoritos</button>
+						</div>
+					</figcaption>
+				</figure>`
+      );
+      container.children[0].append(div);
+    }
+    container.insertAdjacentHTML("afterbegin", `<h1>Todos los platos</h1><br>`);
+    this.dishes.append(container);
+  }
+
+  bindShowAllDishes(handler) {
+    const btns = document.querySelectorAll('[id="b-fav"]');
+    btns.forEach((btn) => {
+      btn.addEventListener("click", (event) => {
+        const {serial} = event.currentTarget.dataset;
+        handler(serial);
+      });
+    });
+  }
+
+  showFavDishModal(done, dishName, error) {
+    console.log(dishName);
+    const messageModalContainer = document.getElementById("messageModal");
+    const messageModal = new bootstrap.Modal("#messageModal");
+
+    const title = document.getElementById("messageModalTitle");
+    title.innerHTML = "Plato Favorito";
+    const body = messageModalContainer.querySelector(".modal-body");
+    body.replaceChildren();
+    if (done) {
+      body.insertAdjacentHTML(
+        "afterbegin",
+        `<div class="p-3">El plato <strong>${dishName}</strong> ha sido creado correctamente.</div>`
+      );
+    } else {
+      body.insertAdjacentHTML(
+        "afterbegin",
+        `<div class="error text-danger p-3"><i class="bi bi-exclamation-triangle"></i> El plato <strong>${dishName}</strong> ya está añadido.</div>`
+      );
+    }
+    messageModal.show();
+    messageModalContainer.addEventListener("hidden.bs.modal", {
+      once: true,
+    });
+  }
+
+  showAllDishes(dishes) {
+    //Cogemos los datos del iterador
+    const allDishes = [...dishes];
+
+    this.dishes.replaceChildren();
+    if (this.dishes.children.length > 1) this.dishes.children[1].remove();
+    const container = document.createElement("div");
+    container.id = "rand-list";
+    container.classList.add("container");
+    container.classList.add("my-3");
+    container.insertAdjacentHTML("beforeend", '<div class="row"> </div>');
+
+    for (const product of allDishes) {
+      const div = document.createElement("div");
+      div.classList.add("col-md-4");
+      div.insertAdjacentHTML(
+        "beforeend",
+        `<figure class="card card-product-grid card-lg"> <a data-serial="${product.dish.name}" href="#single-product" class="img-wrap"><img class="${product.dish.constructor.name}-style" src="${product.dish.image}"></a>
+					<figcaption class="info-wrap">
+						<div class="row">
+							<div class="col-md-12"> <a data-serial="${product.dish.name}" href="#single-product" class="title">${product.dish.name}</a> </div>
+						</div>
+            <div class="cart mt-4 align-items-center">
+										<button id="b-fav" data-serial="${product.dish.name}" class="btn btn-primary text-uppercase mr-2 px-4">Añadir a favoritos</button>
+						</div>
+					</figcaption>
+				</figure>`
+      );
+      container.children[0].append(div);
+    }
+    container.insertAdjacentHTML("afterbegin", `<h1>Todos los platos</h1><br>`);
+    this.dishes.append(container);
+  }
+
+  showFavDishes(dishes) {
+    //Cogemos los datos del iterador
+    const allDishes = dishes;
+
+    this.dishes.replaceChildren();
+    if (this.dishes.children.length > 1) this.dishes.children[1].remove();
+    const container = document.createElement("div");
+    container.id = "rand-list";
+    container.classList.add("container");
+    container.classList.add("my-3");
+    container.insertAdjacentHTML("beforeend", '<div class="row"> </div>');
+
+    for (const product of allDishes) {
+      const div = document.createElement("div");
+      div.classList.add("col-md-4");
+      div.insertAdjacentHTML(
+        "beforeend",
+        `<figure class="card card-product-grid card-lg"> <a data-serial="${product.name}" href="#single-product" class="img-wrap"><img class="${product.constructor.name}-style" src="${product.image}"></a>
+					<figcaption class="info-wrap">
+						<div class="row">
+							<div class="col-md-12"> <a data-serial="${product.name}" href="#single-product" class="title">${product.name}</a> </div>
+						</div>
+					</figcaption>
+				</figure>`
+      );
+      container.children[0].append(div);
+    }
+    container.insertAdjacentHTML("afterbegin", `<h1>Todos los platos</h1><br>`);
+    this.dishes.append(container);
+  }
+
+  getDishes() {
+    return localStorage.getItem("dishes");
+  }
 }
 
 export default RestaurantView;

@@ -27,6 +27,9 @@ const historyActions = {
   categoriesModification: (event) => {
     RestaurantApp.handleModifyCategories(event.state.dish);
   },
+  login: () => RestaurantApp.handleLoginForm(),
+  showDishes: () =>	RestaurantApp.handleShowDishes(),
+  favDishes: () =>	RestaurantApp.handleShowFavDishes(),
 };
 
 window.addEventListener("popstate", (event) => {
